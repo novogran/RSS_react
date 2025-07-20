@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 import ErrorBoundary from './ErrorBoundary';
@@ -60,5 +60,38 @@ describe('ErrorBoundary', () => {
       expect.any(Error),
       expect.any(Object)
     );
+  });
+
+  it('4. Восстанавливает нормальный рендеринг после нажатия кнопки восстановления', async () => {
+    let shouldThrow = true;
+    const RecoverableErrorComponent = () => {
+      if (shouldThrow) {
+        throw new Error('Test error message');
+      }
+      return <div>Normal content</div>;
+    };
+
+    const { rerender } = render(
+      <ErrorBoundary>
+        <RecoverableErrorComponent />
+      </ErrorBoundary>
+    );
+
+    expect(screen.getByText('Something went wrong')).toBeInTheDocument();
+
+    shouldThrow = false;
+    fireEvent.click(screen.getByRole('button', { name: 'Try to recover' }));
+
+    rerender(
+      <ErrorBoundary>
+        <RecoverableErrorComponent />
+      </ErrorBoundary>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Normal content')).toBeInTheDocument();
+    });
+
+    expect(screen.queryByText('Something went wrong')).not.toBeInTheDocument();
   });
 });

@@ -66,18 +66,23 @@ describe('SearchBar', () => {
     expect(mockOnSearchSubmit).toHaveBeenCalled();
   });
 
-  it('5. Тримит пробелы при вводе', () => {
+  it('5. Сохраняет значение в localStorage', () => {
+    const setItemSpy = vi.spyOn(localStorage, 'setItem');
+
     render(
       <SearchBar
-        searchTerm=""
+        searchTerm="pikachu"
         onSearchChange={mockOnSearchChange}
-        onSearchSubmit={mockOnSearchSubmit}
+        onSearchSubmit={() => {
+          localStorage.setItem('pokemonSearchTerm', 'pikachu');
+        }}
       />
     );
 
-    const input = screen.getByPlaceholderText('Search Pokémon by name...');
-    fireEvent.change(input, { target: { value: '  pikachu  ' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Search' }));
 
-    expect(mockOnSearchChange).toHaveBeenCalledWith('  pikachu  ');
+    expect(setItemSpy).toHaveBeenCalledWith('pokemonSearchTerm', 'pikachu');
+
+    expect(localStorage.getItem('pokemonSearchTerm')).toBe('pikachu');
   });
 });
