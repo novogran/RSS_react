@@ -1,49 +1,13 @@
 import React from 'react';
-import SearchBar from './SearchBar';
-import ResultsList from './ResultsList';
-
-interface Pokemon {
-  name: string;
-  url: string;
-  id: number;
-  types: string[];
-  abilities: string[];
-}
-
-interface PokemonSearchState {
-  searchTerm: string;
-  results: Pokemon[];
-  loading: boolean;
-  error: string | null;
-  shouldThrowError: boolean;
-}
-
-interface PokemonType {
-  type: {
-    name: string;
-  };
-}
-
-interface PokemonAbility {
-  ability: {
-    name: string;
-  };
-}
-
-interface PokemonDetailResponse {
-  name: string;
-  id: number;
-  url: string;
-  types: PokemonType[];
-  abilities: PokemonAbility[];
-}
-
-interface PokemonListResponse {
-  results: Array<{
-    name: string;
-    url: string;
-  }>;
-}
+import SearchBar from '../SearchBar/SearchBar';
+import ResultsList from '../ResultsList/ResultsList';
+import { API_URL } from '../../types/constants';
+import type {
+  Pokemon,
+  PokemonDetailResponse,
+  PokemonListResponse,
+  PokemonSearchState,
+} from '../../types/pokemonSearch.types';
 
 class PokemonSearch extends React.Component<
   Record<string, never>,
@@ -72,7 +36,7 @@ class PokemonSearch extends React.Component<
 
     const trimmedTerm = searchTerm.trim();
 
-    let apiUrl = 'https://pokeapi.co/api/v2/pokemon';
+    let apiUrl = API_URL;
     if (trimmedTerm) {
       apiUrl += `/${trimmedTerm.toLowerCase()}`;
     } else {
@@ -93,13 +57,7 @@ class PokemonSearch extends React.Component<
         if (trimmedTerm) {
           const pokemonData: PokemonDetailResponse =
             data as PokemonDetailResponse;
-          const pokemon: Pokemon = {
-            name: pokemonData.name,
-            url: `https://pokeapi.co/api/v2/pokemon/${pokemonData.id}`,
-            id: pokemonData.id,
-            types: pokemonData.types.map((t) => t.type.name),
-            abilities: pokemonData.abilities.map((a) => a.ability.name),
-          };
+          const pokemon: Pokemon = this.prepareData(pokemonData);
           this.setState({
             results: [pokemon],
             loading: false,
@@ -112,13 +70,7 @@ class PokemonSearch extends React.Component<
 
           Promise.all(promises)
             .then((pokemonData: PokemonDetailResponse[]) => {
-              const pokemons = pokemonData.map((p) => ({
-                name: p.name,
-                url: p.url,
-                id: p.id,
-                types: p.types.map((t) => t.type.name),
-                abilities: p.abilities.map((a) => a.ability.name),
-              }));
+              const pokemons: Pokemon[] = pokemonData.map(this.prepareData);
               this.setState({
                 results: pokemons,
                 loading: false,
@@ -143,6 +95,14 @@ class PokemonSearch extends React.Component<
         });
       });
   };
+
+  prepareData = (pokemonData: PokemonDetailResponse): Pokemon => ({
+    name: pokemonData.name,
+    url: `${API_URL}/${pokemonData.id}`,
+    id: pokemonData.id,
+    types: pokemonData.types.map((t) => t.type.name),
+    abilities: pokemonData.abilities.map((a) => a.ability.name),
+  });
 
   handleSearchChange = (term: string) => {
     this.setState({ searchTerm: term });

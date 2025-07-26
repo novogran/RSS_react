@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 import ErrorBoundary from './ErrorBoundary';
@@ -22,7 +23,7 @@ describe('ErrorBoundary', () => {
     vi.restoreAllMocks();
   });
 
-  it('1. Рендерит дочерние компоненты при отсутствии ошибок', () => {
+  it('Рендерит дочерние компоненты при отсутствии ошибок', () => {
     render(
       <ErrorBoundary>
         <div data-testid="child-content">Safe content</div>
@@ -33,7 +34,7 @@ describe('ErrorBoundary', () => {
     expect(screen.queryByText('Something went wrong')).not.toBeInTheDocument();
   });
 
-  it('2. Отображает fallback UI при возникновении ошибки в дочернем компоненте', () => {
+  it('Отображает fallback UI при возникновении ошибки в дочернем компоненте', () => {
     render(
       <ErrorBoundary>
         <ErrorComponent />
@@ -47,7 +48,7 @@ describe('ErrorBoundary', () => {
     ).toBeInTheDocument();
   });
 
-  it('3. Вызывает componentDidCatch и логирует ошибку', () => {
+  it('Вызывает componentDidCatch и логирует ошибку', () => {
     const errorSpy = vi.spyOn(console, 'error');
     render(
       <ErrorBoundary>
@@ -62,7 +63,7 @@ describe('ErrorBoundary', () => {
     );
   });
 
-  it('4. Восстанавливает нормальный рендеринг после нажатия кнопки восстановления', async () => {
+  it('Восстанавливает нормальный рендеринг после нажатия кнопки восстановления', async () => {
     let shouldThrow = true;
     const RecoverableErrorComponent = () => {
       if (shouldThrow) {
@@ -80,7 +81,7 @@ describe('ErrorBoundary', () => {
     expect(screen.getByText('Something went wrong')).toBeInTheDocument();
 
     shouldThrow = false;
-    fireEvent.click(screen.getByRole('button', { name: 'Try to recover' }));
+    userEvent.click(screen.getByRole('button', { name: 'Try to recover' }));
 
     rerender(
       <ErrorBoundary>

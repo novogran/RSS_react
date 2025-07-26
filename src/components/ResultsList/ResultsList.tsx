@@ -1,18 +1,6 @@
 import React from 'react';
 import './ResultsList.css';
-
-interface Pokemon {
-  name: string;
-  id: number;
-  types: string[];
-  abilities: string[];
-}
-
-interface ResultsListProps {
-  results: Pokemon[];
-  loading: boolean;
-  error: string | null;
-}
+import type { ResultsListProps } from '../../types/resultsList.types';
 
 class ResultsList extends React.Component<ResultsListProps> {
   capitalize = (str: string) => {

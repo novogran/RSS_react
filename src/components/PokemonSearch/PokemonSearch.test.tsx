@@ -1,17 +1,25 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import PokemonSearch from './PokemonSearch';
+import {
+  render,
+  screen,
+  act,
+  waitFor,
+  fireEvent,
+} from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import {
   mockSuccessfulListFetch,
   mockSuccessfulSingleFetch,
   mockFailedFetch,
-} from '../test-utils/mocks/pokemonapi';
+} from '../../test-utils/mocks/pokemonapi';
+import PokemonSearch from './PokemonSearch';
 
 describe('PokemonSearch', () => {
+  const user = userEvent.setup();
   beforeEach(() => {
     window.localStorage.clear();
   });
 
-  it('1. Загружает сохраненный поисковый запрос из localStorage', async () => {
+  it('Загружает сохраненный поисковый запрос из localStorage', async () => {
     window.localStorage.setItem('pokemonSearchTerm', 'pikachu');
     mockSuccessfulSingleFetch();
 
@@ -22,7 +30,7 @@ describe('PokemonSearch', () => {
     });
   });
 
-  it('2. Загружает список покемонов при пустом поисковом запросе', async () => {
+  it('Загружает список покемонов при пустом поисковом запросе', async () => {
     mockSuccessfulListFetch();
 
     render(<PokemonSearch />);
@@ -33,7 +41,7 @@ describe('PokemonSearch', () => {
     });
   });
 
-  it('3. Ищет конкретного покемона', async () => {
+  it('Ищет конкретного покемона', async () => {
     mockSuccessfulListFetch();
     mockSuccessfulSingleFetch();
 
@@ -45,7 +53,7 @@ describe('PokemonSearch', () => {
 
     const input = screen.getByPlaceholderText('Search Pokémon by name...');
     fireEvent.change(input, { target: { value: 'pikachu' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Search' }));
+    userEvent.click(screen.getByRole('button', { name: 'Search' }));
 
     await waitFor(() => {
       expect(screen.queryByText('Charizard')).not.toBeInTheDocument();
@@ -57,15 +65,19 @@ describe('PokemonSearch', () => {
     });
   });
 
-  it('4. Тримит пробелы при поиске', async () => {
+  it('Тримит пробелы при поиске', async () => {
     mockSuccessfulListFetch();
     mockSuccessfulSingleFetch();
 
     render(<PokemonSearch />);
 
     const input = screen.getByPlaceholderText('Search Pokémon by name...');
-    fireEvent.change(input, { target: { value: '  pikachu  ' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Search' }));
+    const button = screen.getByRole('button', { name: 'Search' });
+
+    await act(async () => {
+      await user.type(input, '  pikachu  ');
+      await user.click(button);
+    });
 
     await waitFor(() => {
       expect(screen.getByText('Pikachu')).toBeInTheDocument();
@@ -73,21 +85,21 @@ describe('PokemonSearch', () => {
     });
   });
 
-  it('5. Обрабатывает ошибки API', async () => {
+  it('Обрабатывает ошибки API', async () => {
     mockFailedFetch(404);
 
     render(<PokemonSearch />);
 
     const input = screen.getByPlaceholderText('Search Pokémon by name...');
     fireEvent.change(input, { target: { value: 'unknown' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Search' }));
+    userEvent.click(screen.getByRole('button', { name: 'Search' }));
 
     await waitFor(() => {
       expect(screen.getByText('Pokémon not found')).toBeInTheDocument();
     });
   });
 
-  it('6. Отображает состояние загрузки', async () => {
+  it('Отображает состояние загрузки', async () => {
     mockSuccessfulListFetch();
 
     render(<PokemonSearch />);

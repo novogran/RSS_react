@@ -9,23 +9,23 @@ const mockPokemon = {
 };
 
 describe('ResultsList', () => {
-  it('1. Отображает состояние загрузки', () => {
+  it('Отображает состояние загрузки', () => {
     render(<ResultsList loading={true} results={[]} error={null} />);
     expect(screen.getByText('Searching for Pokémon...')).toBeInTheDocument();
   });
 
-  it('2. Отображает сообщение об ошибке', () => {
+  it('Отображает сообщение об ошибке', () => {
     render(<ResultsList loading={false} results={[]} error="API error" />);
     expect(screen.getByText('Error loading Pokémon')).toBeInTheDocument();
     expect(screen.getByText('API error')).toBeInTheDocument();
   });
 
-  it('3. Отображает сообщение о пустых результатах', () => {
+  it('Отображает сообщение о пустых результатах', () => {
     render(<ResultsList loading={false} results={[]} error={null} />);
     expect(screen.getByText('No Pokémon found')).toBeInTheDocument();
   });
 
-  it('4. Отображает список покемонов', () => {
+  it('Отображает список покемонов', () => {
     render(
       <ResultsList
         loading={false}
@@ -40,7 +40,7 @@ describe('ResultsList', () => {
     expect(screen.getByText('Charizard')).toBeInTheDocument();
   });
 
-  it('5. Отображает типы и способности', () => {
+  it('Отображает типы и способности', () => {
     render(
       <ResultsList loading={false} results={[mockPokemon]} error={null} />
     );
@@ -52,7 +52,7 @@ describe('ResultsList', () => {
     expect(screen.getByText('Lightning-rod')).toBeInTheDocument();
   });
 
-  it('6. Обрабатывает отсутствие данных', () => {
+  it('Обрабатывает отсутствие данных', () => {
     render(
       <ResultsList
         loading={false}
