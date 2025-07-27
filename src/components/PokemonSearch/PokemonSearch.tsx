@@ -5,6 +5,7 @@ import { ResultsList } from '../ResultsList';
 import { Pagination } from '../Pagination';
 import { PokemonDetails } from '../PokemonDetails';
 import { API_URL, ITEMS_PER_PAGE } from '../../types/constants';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 import type {
   Pokemon,
   PokemonDetailResponse,
@@ -14,8 +15,13 @@ import type {
 
 const PokemonSearch: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [savedSearchTerm, setSavedSearchTerm] = useLocalStorage(
+    'pokemonSearchTerm',
+    ''
+  );
+
   const [state, setState] = useState<PokemonSearchState>({
-    searchTerm: '',
+    searchTerm: savedSearchTerm,
     results: [],
     listLoading: false,
     detailsLoading: false,
@@ -142,33 +148,28 @@ const PokemonSearch: React.FC = () => {
   useEffect(() => {
     const page = parseInt(searchParams.get('page') || '1', 10);
     const detailsId = searchParams.get('details');
-    const savedSearchTerm = localStorage.getItem('pokemonSearchTerm') || '';
 
     setState((prev) => ({
       ...prev,
-      searchTerm: savedSearchTerm,
       currentPage: page,
       listLoading: true,
       selectedPokemon: null,
     }));
 
     fetchData(savedSearchTerm, page, detailsId);
-  }, [fetchData, searchParams]);
+  }, [fetchData, searchParams, savedSearchTerm]);
 
   const handleSearchChange = (term: string) => {
-    setState((prev) => {
-      if (prev.searchTerm === term) return prev;
-      return { ...prev, searchTerm: term };
-    });
+    setState((prev) => ({ ...prev, searchTerm: term }));
   };
 
   const handleSearchSubmit = useCallback(() => {
     const trimmedTerm = state.searchTerm.trim();
-    localStorage.setItem('pokemonSearchTerm', trimmedTerm);
+    setSavedSearchTerm(trimmedTerm);
     setSearchParams({ page: '1' });
     setState((prev) => ({ ...prev, currentPage: 1 }));
     fetchData(trimmedTerm, 1);
-  }, [state.searchTerm, fetchData, setSearchParams]);
+  }, [state.searchTerm, fetchData, setSearchParams, setSavedSearchTerm]);
 
   const handlePageChange = useCallback(
     (page: number) => {
@@ -201,7 +202,6 @@ const PokemonSearch: React.FC = () => {
         ...prev,
         selectedPokemon: pokemon,
         detailsLoading: true,
-        listLoading: false,
       }));
 
       const response = await fetch(`${API_URL}/${pokemon.id}`);
