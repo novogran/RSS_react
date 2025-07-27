@@ -233,53 +233,55 @@ const PokemonSearch: React.FC = () => {
   const totalPages = Math.ceil(state.totalCount / ITEMS_PER_PAGE);
 
   return (
-    <div className="pokemon-search-container">
-      <div className="search-section">
-        <SearchBar
-          searchTerm={state.searchTerm}
-          onSearchChange={handleSearchChange}
-          onSearchSubmit={handleSearchSubmit}
-        />
-      </div>
-
-      <div className="results-section">
-        <div className="master-detail-container">
-          <div className="master-list">
-            <ResultsList
-              results={state.results}
-              loading={state.listLoading}
-              error={state.error}
-              onPokemonSelect={handlePokemonSelect}
-              selectedPokemonId={state.selectedPokemon?.id}
-            />
-            {!state.listLoading &&
-              !state.error &&
-              state.results.length > 0 &&
-              totalPages > 1 && (
-                <Pagination
-                  currentPage={state.currentPage}
-                  totalPages={totalPages}
-                  onPageChange={handlePageChange}
-                />
-              )}
-          </div>
-
-          {state.selectedPokemon && (
-            <div className="detail-view">
-              <PokemonDetails
-                pokemon={state.selectedPokemon}
-                loading={state.detailsLoading}
-                onClose={handleCloseDetails}
-              />
-            </div>
-          )}
+    <div className="content-wrapper">
+      <div className="pokemon-search-container">
+        <div className="search-section">
+          <SearchBar
+            searchTerm={state.searchTerm}
+            onSearchChange={handleSearchChange}
+            onSearchSubmit={handleSearchSubmit}
+          />
         </div>
-      </div>
 
-      <div className="test-error-container">
-        <button onClick={handleTestError} className="error-button">
-          Test Error Boundary
-        </button>
+        <div className="results-section">
+          <div className="master-detail-container">
+            <div className="master-list">
+              <ResultsList
+                results={state.results}
+                loading={state.listLoading}
+                error={state.error}
+                onPokemonSelect={handlePokemonSelect}
+                selectedPokemonId={state.selectedPokemon?.id}
+              />
+              {!state.listLoading &&
+                !state.error &&
+                state.results.length > 0 &&
+                totalPages > 1 && (
+                  <Pagination
+                    currentPage={state.currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                  />
+                )}
+            </div>
+
+            {state.selectedPokemon && (
+              <div className="detail-view">
+                <PokemonDetails
+                  pokemon={state.selectedPokemon}
+                  loading={state.detailsLoading}
+                  onClose={handleCloseDetails}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="test-error-container">
+          <button onClick={handleTestError} className="error-button">
+            Test Error Boundary
+          </button>
+        </div>
       </div>
     </div>
   );
