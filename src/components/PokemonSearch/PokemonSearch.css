@@ -1,0 +1,126 @@
+.pokemon-details-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.pokemon-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.pokemon-id {
+  color: #95a5a6;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.pokemon-name {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 28px;
+  flex-grow: 1;
+  text-align: center;
+}
+
+.close-details-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #7f8c8d;
+  padding: 5px;
+}
+
+.close-details-button:hover {
+  color: #e74c3c;
+}
+
+.pokemon-image-container {
+  text-align: center;
+  margin: 20px 0;
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.pokemon-image {
+  max-width: 100%;
+  height: auto;
+  max-height: 200px;
+  object-fit: contain;
+}
+
+.detail-section {
+  margin-bottom: 20px;
+}
+
+.detail-section h3 {
+  color: #3498db;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+  margin-top: 0;
+}
+
+.physical-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.physical-details div {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dashed #eee;
+}
+
+.types-container,
+.abilities-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.stat-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.stat-name {
+  width: 120px;
+  color: #7f8c8d;
+  font-size: 14px;
+}
+
+.stat-bar {
+  flex-grow: 1;
+  height: 20px;
+  background: #ecf0f1;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.stat-value {
+  height: 100%;
+  background: linear-gradient(90deg, #3498db, #2ecc71);
+  color: white;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+  min-width: 40px;
+}
+
+.pokemon-details-container.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+}

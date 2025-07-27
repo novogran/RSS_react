@@ -3,17 +3,18 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 300px;
+  padding: 2rem;
+  transition: opacity 0.3s ease;
 }
 
 .spinner {
-  width: 50px;
-  height: 50px;
-  border: 5px solid rgba(52, 152, 219, 0.2);
-  border-top: 5px solid #3498db;
+  border: 4px solid rgba(0, 0, 0, 0.1);
   border-radius: 50%;
+  border-top: 4px solid #3498db;
+  width: 40px;
+  height: 40px;
   animation: spin 1s linear infinite;
-  margin-bottom: 20px;
+  margin-bottom: 1rem;
 }
 
 @keyframes spin {
@@ -138,7 +139,15 @@
   color: #2c3e50;
 }
 
-/* Type colors */
+.pokemon-card.selected {
+  border: 2px solid #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3);
+}
+
+.pokemon-card.selected .pokemon-header {
+  background-color: #2980b9;
+}
+
 .type-normal {
   background-color: #a8a878;
   color: white;

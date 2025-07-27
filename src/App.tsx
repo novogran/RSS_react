@@ -12,6 +12,8 @@ class App extends React.Component {
           <h1 className="app-title">Pokémon Search</h1>
           <Routes>
             <Route path="/" element={<PokemonSearch />} />
+            <Route path="/:page" element={<PokemonSearch />} />
+            <Route path="/:page/:detailsId" element={<PokemonSearch />} />
           </Routes>
         </div>
       </ErrorBoundary>
