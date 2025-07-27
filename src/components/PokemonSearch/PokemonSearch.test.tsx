@@ -1,11 +1,6 @@
-import {
-  render,
-  screen,
-  act,
-  waitFor,
-  fireEvent,
-} from '@testing-library/react';
-import { userEvent } from '@testing-library/user-event';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 import {
   mockSuccessfulListFetch,
   mockSuccessfulSingleFetch,
@@ -15,15 +10,20 @@ import PokemonSearch from './PokemonSearch';
 
 describe('PokemonSearch', () => {
   const user = userEvent.setup();
+
   beforeEach(() => {
     window.localStorage.clear();
   });
+
+  const renderWithRouter = (ui: React.ReactElement, { route = '/' } = {}) => {
+    return render(<MemoryRouter initialEntries={[route]}>{ui}</MemoryRouter>);
+  };
 
   it('Загружает сохраненный поисковый запрос из localStorage', async () => {
     window.localStorage.setItem('pokemonSearchTerm', 'pikachu');
     mockSuccessfulSingleFetch();
 
-    render(<PokemonSearch />);
+    renderWithRouter(<PokemonSearch />);
 
     await waitFor(() => {
       expect(screen.getByDisplayValue('pikachu')).toBeInTheDocument();
@@ -33,7 +33,7 @@ describe('PokemonSearch', () => {
   it('Загружает список покемонов при пустом поисковом запросе', async () => {
     mockSuccessfulListFetch();
 
-    render(<PokemonSearch />);
+    renderWithRouter(<PokemonSearch />);
 
     await waitFor(() => {
       expect(screen.getByText('Pikachu')).toBeInTheDocument();
@@ -45,21 +45,18 @@ describe('PokemonSearch', () => {
     mockSuccessfulListFetch();
     mockSuccessfulSingleFetch();
 
-    render(<PokemonSearch />);
+    renderWithRouter(<PokemonSearch />);
 
     await waitFor(() => {
       expect(screen.getByText('Charizard')).toBeInTheDocument();
     });
 
     const input = screen.getByPlaceholderText('Search Pokémon by name...');
-    fireEvent.change(input, { target: { value: 'pikachu' } });
-    userEvent.click(screen.getByRole('button', { name: 'Search' }));
+    await user.type(input, 'pikachu');
+    await user.click(screen.getByRole('button', { name: 'Search' }));
 
     await waitFor(() => {
       expect(screen.queryByText('Charizard')).not.toBeInTheDocument();
-    });
-
-    await waitFor(() => {
       expect(screen.getByText('Pikachu')).toBeInTheDocument();
       expect(window.localStorage.getItem('pokemonSearchTerm')).toBe('pikachu');
     });
@@ -69,15 +66,13 @@ describe('PokemonSearch', () => {
     mockSuccessfulListFetch();
     mockSuccessfulSingleFetch();
 
-    render(<PokemonSearch />);
+    renderWithRouter(<PokemonSearch />);
 
     const input = screen.getByPlaceholderText('Search Pokémon by name...');
     const button = screen.getByRole('button', { name: 'Search' });
 
-    await act(async () => {
-      await user.type(input, '  pikachu  ');
-      await user.click(button);
-    });
+    await user.type(input, '  pikachu  ');
+    await user.click(button);
 
     await waitFor(() => {
       expect(screen.getByText('Pikachu')).toBeInTheDocument();
@@ -88,11 +83,11 @@ describe('PokemonSearch', () => {
   it('Обрабатывает ошибки API', async () => {
     mockFailedFetch(404);
 
-    render(<PokemonSearch />);
+    renderWithRouter(<PokemonSearch />);
 
     const input = screen.getByPlaceholderText('Search Pokémon by name...');
-    fireEvent.change(input, { target: { value: 'unknown' } });
-    userEvent.click(screen.getByRole('button', { name: 'Search' }));
+    await user.type(input, 'unknown');
+    await user.click(screen.getByRole('button', { name: 'Search' }));
 
     await waitFor(() => {
       expect(screen.getByText('Pokémon not found')).toBeInTheDocument();
@@ -102,7 +97,7 @@ describe('PokemonSearch', () => {
   it('Отображает состояние загрузки', async () => {
     mockSuccessfulListFetch();
 
-    render(<PokemonSearch />);
+    renderWithRouter(<PokemonSearch />);
 
     expect(screen.getByText('Searching for Pokémon...')).toBeInTheDocument();
 
