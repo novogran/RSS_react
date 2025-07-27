@@ -14,6 +14,10 @@ describe('SearchBar', () => {
     vi.restoreAllMocks();
   });
 
+  afterEach(() => {
+    localStorage.clear();
+  });
+
   it('Рендерит input и кнопку', () => {
     render(
       <SearchBar
@@ -75,16 +79,14 @@ describe('SearchBar', () => {
     expect(mockOnSearchSubmit).toHaveBeenCalled();
   });
 
-  it('Сохраняет значение в localStorage', async () => {
+  it('Сохраняет значение в localStorage при отправке формы', async () => {
     const setItemSpy = vi.spyOn(localStorage, 'setItem');
 
     render(
       <SearchBar
         searchTerm="pikachu"
         onSearchChange={mockOnSearchChange}
-        onSearchSubmit={() => {
-          localStorage.setItem('pokemonSearchTerm', 'pikachu');
-        }}
+        onSearchSubmit={mockOnSearchSubmit}
       />
     );
 

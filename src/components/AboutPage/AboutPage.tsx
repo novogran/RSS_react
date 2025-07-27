@@ -8,10 +8,13 @@ const AboutPage: React.FC = () => {
         <h1>About the Developer</h1>
 
         <div className="developer-info">
-          <div className="avatar-placeholder"></div>
+          <div
+            className="avatar-placeholder"
+            data-testid="avatar-placeholder"
+          ></div>
           <div className="developer-details">
             <h2>Novogran Vitaly</h2>
-            <ul className="developer-stats">
+            <ul className="developer-stats" aria-label="Developer Stats">
               <li>
                 <strong>Age:</strong> 29
               </li>

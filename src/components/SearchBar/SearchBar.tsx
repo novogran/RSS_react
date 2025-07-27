@@ -13,6 +13,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    localStorage.setItem('pokemonSearchTerm', searchTerm);
     onSearchSubmit();
   };
 

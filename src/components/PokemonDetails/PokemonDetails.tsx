@@ -1,6 +1,6 @@
 import React from 'react';
 import './PokemonDetails.css';
-import type { PokemonDetailsProps } from '../../types/PokemonDetails.types';
+import type { PokemonDetailsProps } from '../../types/pokemonDetails.types';
 
 const PokemonDetails: React.FC<PokemonDetailsProps> = ({
   pokemon,
@@ -18,7 +18,7 @@ const PokemonDetails: React.FC<PokemonDetailsProps> = ({
   if (loading) {
     return (
       <div className="pokemon-details-container loading">
-        <div className="loading-spinner"></div>
+        <div className="loading-spinner" data-testid="loading-spinner"></div>
         <p>Loading details...</p>
       </div>
     );
