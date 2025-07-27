@@ -8,7 +8,15 @@ const ResultsList: React.FC<ResultsListProps> = ({
   error,
   onPokemonSelect,
   selectedPokemonId,
+  onCloseDetails,
 }) => {
+  const handleContainerClick = (e: React.MouseEvent) => {
+    const isClickOnCard = (e.target as HTMLElement).closest('.pokemon-card');
+    if (!isClickOnCard && selectedPokemonId) {
+      onCloseDetails();
+    }
+  };
+
   if (loading) {
     return (
       <div className="loading-container">
@@ -39,7 +47,7 @@ const ResultsList: React.FC<ResultsListProps> = ({
   }
 
   return (
-    <div className="results-container">
+    <div className="results-container" onClick={handleContainerClick}>
       <h2 className="results-title">Search Results</h2>
       <ul className="pokemon-list">
         {results.map((pokemon) => (

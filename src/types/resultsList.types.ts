@@ -8,4 +8,5 @@ export interface ResultsListProps {
   error: string | null;
   onPokemonSelect: (pokemon: Pokemon) => void;
   selectedPokemonId?: number;
+  onCloseDetails: () => void;
 }

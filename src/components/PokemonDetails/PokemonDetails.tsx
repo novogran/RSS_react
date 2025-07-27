@@ -24,8 +24,12 @@ const PokemonDetails: React.FC<PokemonDetailsProps> = ({
     );
   }
 
+  const handleContainerClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   return (
-    <div className="pokemon-details-container">
+    <div className="pokemon-details-container" onClick={handleContainerClick}>
       <button onClick={onClose} className="close-details-button">
         ×
       </button>

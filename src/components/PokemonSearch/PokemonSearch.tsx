@@ -232,6 +232,12 @@ const PokemonSearch: React.FC = () => {
 
   const totalPages = Math.ceil(state.totalCount / ITEMS_PER_PAGE);
 
+  const handleContentWrapperClick = useCallback(() => {
+    if (state.selectedPokemon) {
+      handleCloseDetails();
+    }
+  }, [state.selectedPokemon, handleCloseDetails]);
+
   return (
     <div className="content-wrapper">
       <div className="pokemon-search-container">
@@ -246,13 +252,6 @@ const PokemonSearch: React.FC = () => {
         <div className="results-section">
           <div className="master-detail-container">
             <div className="master-list">
-              <ResultsList
-                results={state.results}
-                loading={state.listLoading}
-                error={state.error}
-                onPokemonSelect={handlePokemonSelect}
-                selectedPokemonId={state.selectedPokemon?.id}
-              />
               {!state.listLoading &&
                 !state.error &&
                 state.results.length > 0 &&
@@ -263,10 +262,18 @@ const PokemonSearch: React.FC = () => {
                     onPageChange={handlePageChange}
                   />
                 )}
+              <ResultsList
+                results={state.results}
+                loading={state.listLoading}
+                error={state.error}
+                onPokemonSelect={handlePokemonSelect}
+                selectedPokemonId={state.selectedPokemon?.id}
+                onCloseDetails={handleContentWrapperClick}
+              />
             </div>
 
             {state.selectedPokemon && (
-              <div className="detail-view">
+              <div className="detail-view" onClick={handleContentWrapperClick}>
                 <PokemonDetails
                   pokemon={state.selectedPokemon}
                   loading={state.detailsLoading}
