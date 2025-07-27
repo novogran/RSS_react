@@ -12,6 +12,8 @@ export interface PokemonSearchState {
   loading: boolean;
   error: string | null;
   shouldThrowError: boolean;
+  currentPage: number;
+  totalCount: number;
 }
 
 export interface PokemonType {
@@ -35,6 +37,7 @@ export interface PokemonDetailResponse {
 }
 
 export interface PokemonListResponse {
+  count: number;
   results: Array<{
     name: string;
     url: string;

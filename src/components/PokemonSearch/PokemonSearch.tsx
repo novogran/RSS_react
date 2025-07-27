@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import SearchBar from '../SearchBar/SearchBar';
 import ResultsList from '../ResultsList/ResultsList';
-import { API_URL } from '../../types/constants';
+import Pagination from '../Pagination/Pagination';
+import { API_URL, ITEMS_PER_PAGE } from '../../types/constants';
 import type {
   Pokemon,
   PokemonDetailResponse,
@@ -9,94 +11,94 @@ import type {
   PokemonSearchState,
 } from '../../types/pokemonSearch.types';
 
-class PokemonSearch extends React.Component<
-  Record<string, never>,
-  PokemonSearchState
-> {
-  constructor(props: Record<string, never>) {
-    super(props);
-    this.state = {
-      searchTerm: '',
-      results: [],
-      loading: false,
-      error: null,
-      shouldThrowError: false,
-    };
-  }
+const PokemonSearch: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [state, setState] = useState<PokemonSearchState>({
+    searchTerm: '',
+    results: [],
+    loading: false,
+    error: null,
+    shouldThrowError: false,
+    currentPage: 1,
+    totalCount: 0,
+  });
 
-  componentDidMount() {
+  useEffect(() => {
+    const page = parseInt(searchParams.get('page') || '1', 10);
     const savedSearchTerm = localStorage.getItem('pokemonSearchTerm') || '';
-    this.setState({ searchTerm: savedSearchTerm }, () => {
-      this.fetchData(savedSearchTerm);
-    });
-  }
 
-  fetchData = (searchTerm: string) => {
-    this.setState({ loading: true, error: null });
+    setState((prev) => ({
+      ...prev,
+      searchTerm: savedSearchTerm,
+      currentPage: page,
+    }));
 
-    const trimmedTerm = searchTerm.trim();
+    fetchData(savedSearchTerm, page);
+  }, []);
 
-    let apiUrl = API_URL;
-    if (trimmedTerm) {
-      apiUrl += `/${trimmedTerm.toLowerCase()}`;
-    } else {
-      apiUrl += '?limit=20';
-    }
+  const fetchData = async (searchTerm: string, page: number = 1) => {
+    setState((prev) => ({ ...prev, loading: true, error: null }));
 
-    fetch(apiUrl)
-      .then((response) => {
-        if (!response.ok) {
-          if (response.status === 404) {
-            throw new Error('Pokémon not found');
-          }
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data: PokemonDetailResponse | PokemonListResponse) => {
-        if (trimmedTerm) {
-          const pokemonData: PokemonDetailResponse =
-            data as PokemonDetailResponse;
-          const pokemon: Pokemon = this.prepareData(pokemonData);
-          this.setState({
-            results: [pokemon],
-            loading: false,
-          });
-        } else {
-          const listData = data as PokemonListResponse;
-          const promises = listData.results.map((p) =>
-            fetch(p.url).then((res) => res.json())
-          );
+    try {
+      const trimmedTerm = searchTerm.trim();
+      const offset = (page - 1) * ITEMS_PER_PAGE;
+      let apiUrl = API_URL;
 
-          Promise.all(promises)
-            .then((pokemonData: PokemonDetailResponse[]) => {
-              const pokemons: Pokemon[] = pokemonData.map(this.prepareData);
-              this.setState({
-                results: pokemons,
-                loading: false,
-              });
-            })
-            .catch((error) => {
-              console.error('Error fetching Pokémon details:', error);
-              this.setState({
-                error: error.message || 'Failed to fetch Pokémon details',
-                loading: false,
-                results: [],
-              });
-            });
-        }
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-        this.setState({
-          error: error.message || 'Failed to fetch data',
+      if (trimmedTerm) {
+        apiUrl += `/${trimmedTerm.toLowerCase()}`;
+      } else {
+        apiUrl += `?limit=${ITEMS_PER_PAGE}&offset=${offset}`;
+      }
+
+      const response = await fetch(apiUrl);
+      if (!response.ok) {
+        throw new Error(
+          response.status === 404
+            ? 'Pokémon not found'
+            : `HTTP error! Status: ${response.status}`
+        );
+      }
+
+      const data = await response.json();
+
+      if (trimmedTerm) {
+        const pokemon = prepareData(data as PokemonDetailResponse);
+        setState((prev) => ({
+          ...prev,
+          results: [pokemon],
           loading: false,
-          results: [],
-        });
-      });
+          totalCount: 1,
+        }));
+      } else {
+        const listData = data as PokemonListResponse;
+        const pokemonData = await Promise.all(
+          listData.results.map((p) => fetch(p.url).then((res) => res.json()))
+        );
+
+        setState((prev) => ({
+          ...prev,
+          results: pokemonData.map(prepareData),
+          loading: false,
+          totalCount: listData.count,
+        }));
+      }
+    } catch (error) {
+      handleFetchError(error as Error);
+    }
   };
 
-  prepareData = (pokemonData: PokemonDetailResponse): Pokemon => ({
+  const handleFetchError = (error: Error) => {
+    console.error('Error fetching data:', error);
+    setState((prev) => ({
+      ...prev,
+      error: error.message || 'Failed to fetch data',
+      loading: false,
+      results: [],
+      totalCount: 0,
+    }));
+  };
+
+  const prepareData = (pokemonData: PokemonDetailResponse): Pokemon => ({
     name: pokemonData.name,
     url: `${API_URL}/${pokemonData.id}`,
     id: pokemonData.id,
@@ -104,53 +106,69 @@ class PokemonSearch extends React.Component<
     abilities: pokemonData.abilities.map((a) => a.ability.name),
   });
 
-  handleSearchChange = (term: string) => {
-    this.setState({ searchTerm: term });
+  const handleSearchChange = (term: string) => {
+    setState((prev) => ({ ...prev, searchTerm: term }));
   };
 
-  handleSearchSubmit = () => {
-    const { searchTerm } = this.state;
-    const trimmedTerm = searchTerm.trim();
-
+  const handleSearchSubmit = () => {
+    const trimmedTerm = state.searchTerm.trim();
     localStorage.setItem('pokemonSearchTerm', trimmedTerm);
-
-    this.fetchData(trimmedTerm);
+    setSearchParams({ page: '1' });
+    setState((prev) => ({ ...prev, currentPage: 1 }));
+    fetchData(trimmedTerm, 1);
   };
 
-  handleTestError = () => {
-    this.setState({ shouldThrowError: true });
+  const handlePageChange = (page: number) => {
+    setSearchParams({ page: page.toString() });
+    setState((prev) => ({ ...prev, currentPage: page }));
+    fetchData(state.searchTerm, page);
   };
 
-  render() {
-    const { searchTerm, results, loading, error, shouldThrowError } =
-      this.state;
+  const handleTestError = () => {
+    setState((prev) => ({ ...prev, shouldThrowError: true }));
+  };
 
-    if (shouldThrowError) {
-      throw new Error('This is a test error thrown by the application');
-    }
-
-    return (
-      <div className="pokemon-search-container">
-        <div className="search-section">
-          <SearchBar
-            searchTerm={searchTerm}
-            onSearchChange={this.handleSearchChange}
-            onSearchSubmit={this.handleSearchSubmit}
-          />
-        </div>
-
-        <div className="results-section">
-          <ResultsList results={results} loading={loading} error={error} />
-        </div>
-
-        <div className="test-error-container">
-          <button onClick={this.handleTestError} className="error-button">
-            Test Error Boundary
-          </button>
-        </div>
-      </div>
-    );
+  if (state.shouldThrowError) {
+    throw new Error('This is a test error thrown by the application');
   }
-}
+
+  const totalPages = Math.ceil(state.totalCount / ITEMS_PER_PAGE);
+
+  return (
+    <div className="pokemon-search-container">
+      <div className="search-section">
+        <SearchBar
+          searchTerm={state.searchTerm}
+          onSearchChange={handleSearchChange}
+          onSearchSubmit={handleSearchSubmit}
+        />
+      </div>
+
+      <div className="results-section">
+        <ResultsList
+          results={state.results}
+          loading={state.loading}
+          error={state.error}
+        />
+        {!state.loading &&
+          !state.error &&
+          state.results.length > 0 &&
+          totalPages > 1 && (
+            <Pagination
+              currentPage={state.currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          )}
+      </div>
+
+      <div className="test-error-container">
+        <button onClick={handleTestError} className="error-button">
+          Test Error Boundary
+        </button>
+      </div>
+    </div>
+  );
+};
 
 export default PokemonSearch;
