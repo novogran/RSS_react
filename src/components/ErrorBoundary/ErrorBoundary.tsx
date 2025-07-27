@@ -2,14 +2,18 @@ import React from 'react';
 import './ErrorBoundary.css';
 import type { ErrorBoundaryState } from '../../types/errorBoundary.types';
 
+interface ErrorBoundaryProps {
+  children?: React.ReactNode; // Делаем children опциональным
+}
+
 class ErrorBoundary extends React.Component<
-  { children: React.ReactNode },
+  ErrorBoundaryProps,
   ErrorBoundaryState
 > {
-  constructor(props: { children: React.ReactNode }) {
-    super(props);
-    this.state = { hasError: false, errorInfo: '' };
-  }
+  state: ErrorBoundaryState = {
+    hasError: false,
+    errorInfo: '',
+  };
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     return { hasError: true, errorInfo: error.message };
