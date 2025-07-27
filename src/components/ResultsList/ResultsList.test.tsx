@@ -12,6 +12,9 @@ describe('ResultsList', () => {
         onPokemonSelect={function (): void {
           throw new Error('Function not implemented.');
         }}
+        onCloseDetails={function (): void {
+          throw new Error('Function not implemented.');
+        }}
       />
     );
     expect(screen.getByText('Loading Pokémon...')).toBeInTheDocument();
@@ -24,6 +27,9 @@ describe('ResultsList', () => {
         results={[]}
         error="API error"
         onPokemonSelect={function (): void {
+          throw new Error('Function not implemented.');
+        }}
+        onCloseDetails={function (): void {
           throw new Error('Function not implemented.');
         }}
       />
@@ -39,6 +45,9 @@ describe('ResultsList', () => {
         results={[]}
         error={null}
         onPokemonSelect={function (): void {
+          throw new Error('Function not implemented.');
+        }}
+        onCloseDetails={function (): void {
           throw new Error('Function not implemented.');
         }}
       />
@@ -66,6 +75,9 @@ describe('ResultsList', () => {
         onPokemonSelect={function (): void {
           throw new Error('Function not implemented.');
         }}
+        onCloseDetails={function (): void {
+          throw new Error('Function not implemented.');
+        }}
       />
     );
 
@@ -81,6 +93,9 @@ describe('ResultsList', () => {
         results={[mockPokemon]}
         error={null}
         onPokemonSelect={function (): void {
+          throw new Error('Function not implemented.');
+        }}
+        onCloseDetails={function (): void {
           throw new Error('Function not implemented.');
         }}
       />
@@ -105,6 +120,9 @@ describe('ResultsList', () => {
         ]}
         error={null}
         onPokemonSelect={function (): void {
+          throw new Error('Function not implemented.');
+        }}
+        onCloseDetails={function (): void {
           throw new Error('Function not implemented.');
         }}
       />
