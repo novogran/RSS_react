@@ -1,22 +1,14 @@
 import './ResultsList.css';
-import type { ResultsListProps } from '../../types/resultsList.types';
+import type { ResultsListProps } from './types/resultsList.types';
 import { PokemonCard } from '../PokemonCard';
 
-const ResultsList: React.FC<ResultsListProps> = ({
+const ResultsList = ({
   results,
   loading,
   error,
   onPokemonSelect,
   selectedPokemonId,
-  onCloseDetails,
-}) => {
-  const handleContainerClick = (e: React.MouseEvent) => {
-    const isClickOnCard = (e.target as HTMLElement).closest('.pokemon-card');
-    if (!isClickOnCard && selectedPokemonId) {
-      onCloseDetails();
-    }
-  };
-
+}: ResultsListProps) => {
   if (loading) {
     return (
       <div className="loading-container">
@@ -47,7 +39,7 @@ const ResultsList: React.FC<ResultsListProps> = ({
   }
 
   return (
-    <div className="results-container" onClick={handleContainerClick}>
+    <div className="results-container">
       <h2 className="results-title">Search Results</h2>
       <ul className="pokemon-list">
         {results.map((pokemon) => (

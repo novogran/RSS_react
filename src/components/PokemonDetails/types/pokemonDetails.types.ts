@@ -1,4 +1,4 @@
-import type { Pokemon } from './pokemonSearch.types';
+import type { Pokemon } from '../../PokemonSearch/types/pokemonSearch.types';
 
 export interface PokemonDetailsProps {
   pokemon: Pokemon;

@@ -1,20 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './SearchBar.css';
-import type { SearchBarProps } from '../../types/searchBar.types';
+import type { SearchBarProps } from './types/searchBar.types';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { LOCAL_STORAGE_SEARCHTERM_KEY } from '../../constants';
 
-const SearchBar: React.FC<SearchBarProps> = ({
-  searchTerm,
-  onSearchChange,
-  onSearchSubmit,
-}) => {
+const SearchBar = ({ onSearchSubmit }: SearchBarProps) => {
+  const [savedSearchTerm, setSearchTermToLS] = useLocalStorage(
+    LOCAL_STORAGE_SEARCHTERM_KEY,
+    ''
+  );
+  const [searchTerm, setSearchTerm] = useState(savedSearchTerm);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onSearchChange(e.target.value);
+    setSearchTerm(e.target.value);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem('pokemonSearchTerm', searchTerm);
-    onSearchSubmit();
+    if (searchTerm === savedSearchTerm) return;
+    setSearchTermToLS(searchTerm);
+    onSearchSubmit(searchTerm);
   };
 
   return (

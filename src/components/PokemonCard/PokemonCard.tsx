@@ -1,11 +1,11 @@
 import { memo } from 'react';
 import './PokemonCard.css';
-import type { PokemonCardProps } from '../../types/pokemonCard.types';
+import type { PokemonCardProps } from './types/pokemonCard.types';
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
-const PokemonCard: React.FC<PokemonCardProps> = memo(
-  ({ pokemon, isSelected, onSelect }) => (
+const PokemonCard = memo(
+  ({ pokemon, isSelected, onSelect }: PokemonCardProps) => (
     <li
       className={`pokemon-card ${isSelected ? 'selected' : ''}`}
       onClick={() => onSelect(pokemon)}

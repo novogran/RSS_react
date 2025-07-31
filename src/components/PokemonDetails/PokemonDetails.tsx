@@ -1,12 +1,8 @@
 import React from 'react';
 import './PokemonDetails.css';
-import type { PokemonDetailsProps } from '../../types/pokemonDetails.types';
+import type { PokemonDetailsProps } from './types/pokemonDetails.types';
 
-const PokemonDetails: React.FC<PokemonDetailsProps> = ({
-  pokemon,
-  loading,
-  onClose,
-}) => {
+const PokemonDetails = ({ pokemon, loading, onClose }: PokemonDetailsProps) => {
   const capitalize = (str: string) =>
     str.charAt(0).toUpperCase() + str.slice(1);
 

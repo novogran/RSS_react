@@ -1,12 +1,11 @@
-import React from 'react';
 import './Pagination.css';
-import type { PaginationProps } from '../../types/pagination.types';
+import type { PaginationProps } from './types/pagination.types';
 
-const Pagination: React.FC<PaginationProps> = ({
+const Pagination = ({
   currentPage,
   totalPages,
   onPageChange,
-}) => {
+}: PaginationProps) => {
   const getPageNumbers = () => {
     const pages = [];
     const maxVisiblePages = 5;

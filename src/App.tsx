@@ -1,4 +1,3 @@
-import React from 'react';
 import './App.css';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { PokemonSearch } from './components/PokemonSearch';
@@ -51,6 +50,6 @@ const router = createBrowserRouter([
   },
 ]);
 
-const App: React.FC = () => <RouterProvider router={router} />;
+const App = () => <RouterProvider router={router} />;
 
 export default App;

@@ -1,7 +1,6 @@
-import React from 'react';
 import './AboutPage.css';
 
-const AboutPage: React.FC = () => {
+const AboutPage = () => {
   return (
     <div className="about-container">
       <div className="about-content">

@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import Pagination from './Pagination';
-import type { PaginationProps } from '../../types/pagination.types';
+import type { PaginationProps } from './types/pagination.types';
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 

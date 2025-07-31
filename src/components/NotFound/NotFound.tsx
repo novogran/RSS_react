@@ -1,7 +1,6 @@
-import React from 'react';
 import './NotFound.css';
 
-const NotFound: React.FC = () => (
+const NotFound = () => (
   <div className="not-found" data-testid="not-found-container">
     <div className="not-found-content" data-testid="not-found-content">
       <div className="sad-pikachu">😢</div>

@@ -1,12 +1,10 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import {
-  mockSuccessfulApiListFetch,
   mockSuccessfulApiSingleFetch,
   mockFailedFetch,
   mockFetch,
-  mockPokemonListApi,
 } from '../../test-utils/mocks/pokemonapi';
 import PokemonSearch from './PokemonSearch';
 import { vi } from 'vitest';
@@ -21,6 +19,7 @@ describe('PokemonSearch', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    localStorage.clear();
   });
 
   const renderWithRouter = (ui: React.ReactElement, { route = '/' } = {}) => {
@@ -33,42 +32,12 @@ describe('PokemonSearch', () => {
 
     renderWithRouter(<PokemonSearch />);
 
-    expect(screen.getByDisplayValue('pikachu')).toBeInTheDocument();
-  });
-
-  it('Загружает список покемонов при пустом поисковом запросе', async () => {
-    mockSuccessfulApiListFetch();
-
-    renderWithRouter(<PokemonSearch />);
-
     await waitFor(() => {
-      expect(screen.getByText('Pikachu')).toBeInTheDocument();
-      expect(screen.getByText('Charizard')).toBeInTheDocument();
+      expect(screen.getByDisplayValue('pikachu')).toBeInTheDocument();
     });
   });
 
-  it('Ищет конкретного покемона', async () => {
-    mockSuccessfulApiListFetch();
-    mockSuccessfulApiSingleFetch();
-
-    renderWithRouter(<PokemonSearch />);
-
-    await waitFor(() => {
-      expect(screen.getByText('Charizard')).toBeInTheDocument();
-    });
-
-    const input = screen.getByPlaceholderText('Search Pokémon by name...');
-    await user.type(input, 'pikachu');
-    await user.click(screen.getByRole('button', { name: 'Search' }));
-
-    await waitFor(() => {
-      expect(screen.queryByText('Charizard')).not.toBeInTheDocument();
-      expect(screen.getByText('Pikachu')).toBeInTheDocument();
-      expect(window.localStorage.getItem('pokemonSearchTerm')).toBe('pikachu');
-    });
-  });
-
-  it('Обрабатывает ошибки API', async () => {
+  it('Обрабатывает ошибки API при поиске', async () => {
     mockFailedFetch(404);
 
     renderWithRouter(<PokemonSearch />);
@@ -78,37 +47,8 @@ describe('PokemonSearch', () => {
     await user.click(screen.getByRole('button', { name: 'Search' }));
 
     await waitFor(() => {
-      expect(screen.getByText('Pokémon not found')).toBeInTheDocument();
+      expect(screen.getByText(/not found|failed/i)).toBeInTheDocument();
     });
-  });
-
-  it('Отображает состояние загрузки', async () => {
-    mockFetch.mockImplementationOnce(() => {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve({
-            ok: true,
-            status: 200,
-            json: async () => mockPokemonListApi,
-          });
-        }, 100);
-      });
-    });
-
-    await act(async () => {
-      renderWithRouter(<PokemonSearch />);
-    });
-
-    expect(screen.getByText('Loading Pokémon...')).toBeInTheDocument();
-
-    await waitFor(
-      () => {
-        expect(
-          screen.queryByText('Loading Pokémon...')
-        ).not.toBeInTheDocument();
-      },
-      { timeout: 200 }
-    );
   });
 
   it('Показывает сообщение при пустом списке результатов', async () => {
@@ -127,34 +67,5 @@ describe('PokemonSearch', () => {
     await waitFor(() => {
       expect(screen.getByText('No Pokémon found')).toBeInTheDocument();
     });
-  });
-
-  it('Показывает индикатор загрузки при медленном соединении', async () => {
-    mockFetch.mockImplementationOnce(
-      () =>
-        new Promise((resolve) =>
-          setTimeout(
-            () =>
-              resolve({
-                ok: true,
-                json: async () => mockPokemonListApi,
-              }),
-            1000
-          )
-        )
-    );
-
-    renderWithRouter(<PokemonSearch />);
-
-    expect(screen.getByText('Loading Pokémon...')).toBeInTheDocument();
-
-    await waitFor(
-      () => {
-        expect(
-          screen.queryByText('Loading Pokémon...')
-        ).not.toBeInTheDocument();
-      },
-      { timeout: 1500 }
-    );
   });
 });

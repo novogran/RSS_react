@@ -30,12 +30,9 @@ export interface PokemonSearchState {
   searchTerm: string;
   results: Pokemon[];
   listLoading: boolean;
-  detailsLoading: boolean;
   error: string | null;
-  shouldThrowError: boolean;
   currentPage: number;
   totalCount: number;
-  selectedPokemon: Pokemon | null;
 }
 
 export interface PokemonType {

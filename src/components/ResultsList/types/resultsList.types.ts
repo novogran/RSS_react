@@ -1,4 +1,4 @@
-import type { Pokemon } from './pokemonSearch.types';
+import type { Pokemon } from '../../PokemonSearch/types/pokemonSearch.types';
 
 export type PokemonSort = Omit<Pokemon, 'url'>;
 
@@ -8,5 +8,4 @@ export interface ResultsListProps {
   error: string | null;
   onPokemonSelect: (pokemon: Pokemon) => void;
   selectedPokemonId?: number;
-  onCloseDetails: () => void;
 }
