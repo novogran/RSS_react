@@ -1,0 +1,53 @@
+.error-boundary {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.95);
+  z-index: 1000;
+  padding: 20px;
+}
+
+.error-content {
+  max-width: 600px;
+  width: 100%;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  padding: 30px;
+  text-align: center;
+  border-left: 5px solid #e74c3c;
+}
+
+.error-content h3 {
+  color: #c0392b;
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+.error-content p {
+  color: #7f8c8d;
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 25px;
+}
+
+.error-button {
+  background-color: #c0392b;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.error-button:hover {
+  background-color: #2980b9;
+}
