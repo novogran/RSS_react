@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { NotFound } from './components/NotFound';
 import { AboutPage } from './components/AboutPage';
 import { Header } from './components/Header';
+import { ThemeProvider } from './context/ThemeProvider';
 
 const router = createBrowserRouter([
   {
@@ -50,6 +51,10 @@ const router = createBrowserRouter([
   },
 ]);
 
-const App = () => <RouterProvider router={router} />;
+const App = () => (
+  <ThemeProvider>
+    <RouterProvider router={router} />;
+  </ThemeProvider>
+);
 
 export default App;

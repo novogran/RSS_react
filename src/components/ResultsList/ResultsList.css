@@ -54,7 +54,7 @@
 }
 
 .results-title {
-  color: #2c3e50;
+  color: var(--color-text);
   margin-bottom: 20px;
   font-size: 1.5rem;
 }

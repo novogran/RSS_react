@@ -2,14 +2,17 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import Header from './Header';
 import '@testing-library/jest-dom';
+import { ThemeProvider } from '../../context/ThemeProvider';
 
 describe('Header', () => {
   const renderWithRouter = (initialRoute = '/') => {
     return render(
       <MemoryRouter initialEntries={[initialRoute]}>
-        <Routes>
-          <Route path="*" element={<Header />} />
-        </Routes>
+        <ThemeProvider>
+          <Routes>
+            <Route path="*" element={<Header />} />
+          </Routes>
+        </ThemeProvider>
       </MemoryRouter>
     );
   };

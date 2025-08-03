@@ -2,14 +2,14 @@
   max-width: 800px;
   margin: 2rem auto;
   padding: 2rem;
-  background-color: #fff;
+  background-color: var(--color-background);
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px var(--color-border-shadow);
 }
 
 .about-content h1 {
   text-align: center;
-  color: #2c3e50;
+  color: var(--color-text);
   margin-bottom: 2rem;
   border-bottom: 2px solid #3498db;
   padding-bottom: 1rem;
@@ -19,7 +19,7 @@
   display: flex;
   align-items: center;
   margin-bottom: 2rem;
-  background-color: #f8f9fa;
+  background-color: var(--color-border-shadow);
   padding: 1.5rem;
   border-radius: 10px;
 }
@@ -39,7 +39,7 @@
 }
 
 .developer-details h2 {
-  color: #2c3e50;
+  color: var(--color-text);
   margin-bottom: 1rem;
 }
 
@@ -76,7 +76,7 @@
 .rs-school {
   text-align: center;
   padding: 1.5rem;
-  background-color: #f8f9fa;
+  background-color: var(--color-border-shadow);
   border-radius: 10px;
 }
 
