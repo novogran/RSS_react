@@ -1,4 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { store } from '../../utils/store';
 import PokemonCard from './PokemonCard';
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
@@ -13,11 +15,13 @@ describe('PokemonCard', () => {
 
   it('корректно отображает информацию о покемоне', () => {
     render(
-      <PokemonCard
-        pokemon={mockPokemon}
-        isSelected={false}
-        onSelect={mockOnSelect}
-      />
+      <Provider store={store}>
+        <PokemonCard
+          pokemon={mockPokemon}
+          isSelected={false}
+          onSelect={mockOnSelect}
+        />
+      </Provider>
     );
 
     expect(screen.getByText('#025')).toBeInTheDocument();
@@ -29,11 +33,13 @@ describe('PokemonCard', () => {
 
   it('добавляет класс selected при выделении', () => {
     render(
-      <PokemonCard
-        pokemon={mockPokemon}
-        isSelected={true}
-        onSelect={mockOnSelect}
-      />
+      <Provider store={store}>
+        <PokemonCard
+          pokemon={mockPokemon}
+          isSelected={true}
+          onSelect={mockOnSelect}
+        />
+      </Provider>
     );
 
     const card = screen.getByRole('listitem');
@@ -42,11 +48,13 @@ describe('PokemonCard', () => {
 
   it('вызывает onSelect с правильным покемоном при клике', () => {
     render(
-      <PokemonCard
-        pokemon={mockPokemon}
-        isSelected={false}
-        onSelect={mockOnSelect}
-      />
+      <Provider store={store}>
+        <PokemonCard
+          pokemon={mockPokemon}
+          isSelected={false}
+          onSelect={mockOnSelect}
+        />
+      </Provider>
     );
 
     const card = screen.getByRole('listitem');
@@ -59,11 +67,13 @@ describe('PokemonCard', () => {
   it('корректно форматирует ID покемона', () => {
     const pokemonWithSingleDigitId = { ...mockPokemon, id: 5 };
     render(
-      <PokemonCard
-        pokemon={pokemonWithSingleDigitId}
-        isSelected={false}
-        onSelect={mockOnSelect}
-      />
+      <Provider store={store}>
+        <PokemonCard
+          pokemon={pokemonWithSingleDigitId}
+          isSelected={false}
+          onSelect={mockOnSelect}
+        />
+      </Provider>
     );
 
     expect(screen.getByText('#005')).toBeInTheDocument();
@@ -76,11 +86,13 @@ describe('PokemonCard', () => {
     };
 
     render(
-      <PokemonCard
-        pokemon={multiTypePokemon}
-        isSelected={false}
-        onSelect={mockOnSelect}
-      />
+      <Provider store={store}>
+        <PokemonCard
+          pokemon={multiTypePokemon}
+          isSelected={false}
+          onSelect={mockOnSelect}
+        />
+      </Provider>
     );
 
     expect(screen.getByText('Electric')).toBeInTheDocument();
@@ -94,11 +106,13 @@ describe('PokemonCard', () => {
     };
 
     render(
-      <PokemonCard
-        pokemon={pokemonWithManyAbilities}
-        isSelected={false}
-        onSelect={mockOnSelect}
-      />
+      <Provider store={store}>
+        <PokemonCard
+          pokemon={pokemonWithManyAbilities}
+          isSelected={false}
+          onSelect={mockOnSelect}
+        />
+      </Provider>
     );
 
     expect(screen.getByText('Ability1')).toBeInTheDocument();

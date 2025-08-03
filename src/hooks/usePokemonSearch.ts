@@ -11,11 +11,14 @@ import type {
   Pokemon,
   PokemonSearchState,
 } from '../components/PokemonSearch/types/pokemonSearch.types';
+import { LOCAL_STORAGE_SEARCHTERM_KEY } from '../constants';
+import { useLocalStorage } from './useLocalStorage';
 
 export const usePokemonSearch = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [savedSearchTerm] = useLocalStorage(LOCAL_STORAGE_SEARCHTERM_KEY, '');
   const [state, setState] = useState<PokemonSearchState>({
-    searchTerm: '',
+    searchTerm: savedSearchTerm,
     results: [],
     listLoading: false,
     error: null,
@@ -86,7 +89,11 @@ export const usePokemonSearch = () => {
   const detailsId = searchParams.get('details');
 
   useEffect(() => {
-    setState((prev) => ({ ...prev, currentPage: page }));
+    setState((prev) => ({
+      ...prev,
+      currentPage: page,
+      searchTerm: state.searchTerm,
+    }));
     loadData(state.searchTerm, page);
   }, [page, state.searchTerm, loadData]);
 

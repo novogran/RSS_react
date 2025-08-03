@@ -146,3 +146,10 @@
   background-color: #ee99ac;
   color: #333 !important;
 }
+
+.pokemon-checkbox {
+  margin-left: auto;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}

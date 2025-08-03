@@ -1,6 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { store } from '../../utils/store';
 import {
   mockSuccessfulApiSingleFetch,
   mockFailedFetch,
@@ -23,7 +25,11 @@ describe('PokemonSearch', () => {
   });
 
   const renderWithRouter = (ui: React.ReactElement, { route = '/' } = {}) => {
-    return render(<MemoryRouter initialEntries={[route]}>{ui}</MemoryRouter>);
+    return render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={[route]}>{ui}</MemoryRouter>
+      </Provider>
+    );
   };
 
   it('Загружает сохраненный поисковый запрос из localStorage', async () => {

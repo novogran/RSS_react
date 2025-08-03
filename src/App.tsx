@@ -6,6 +6,8 @@ import { NotFound } from './components/NotFound';
 import { AboutPage } from './components/AboutPage';
 import { Header } from './components/Header';
 import { ThemeProvider } from './context/ThemeProvider';
+import { Provider } from 'react-redux';
+import { store } from './utils/store';
 
 const router = createBrowserRouter([
   {
@@ -52,9 +54,11 @@ const router = createBrowserRouter([
 ]);
 
 const App = () => (
-  <ThemeProvider>
-    <RouterProvider router={router} />;
-  </ThemeProvider>
+  <Provider store={store}>
+    <ThemeProvider>
+      <RouterProvider router={router} />;
+    </ThemeProvider>
+  </Provider>
 );
 
 export default App;
