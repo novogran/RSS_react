@@ -11,21 +11,18 @@ const PokemonDetails = ({ pokemon, loading, onClose }: PokemonDetailsProps) => {
     pokemon.sprites?.front_default ||
     '';
 
-  if (loading) {
-    return (
-      <div className="pokemon-details-container loading">
-        <div className="loading-spinner" data-testid="loading-spinner"></div>
-        <p>Loading details...</p>
-      </div>
-    );
-  }
-
   const handleContainerClick = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
 
   return (
     <div className="pokemon-details-container" onClick={handleContainerClick}>
+      {loading && (
+        <div className="pokemon-details-container loading">
+          <div className="loading-spinner" data-testid="loading-spinner"></div>
+          <p>Loading details...</p>
+        </div>
+      )}
       <button onClick={onClose} className="close-details-button">
         ×
       </button>

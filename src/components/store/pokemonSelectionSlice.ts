@@ -28,8 +28,12 @@ export const pokemonSelectionSlice = createSlice({
       state.selectedPokemons = [];
     },
   },
+  selectors: {
+    selectedPokemonSelector: (state) => state.selectedPokemons,
+  },
 });
 
+export const { selectedPokemonSelector } = pokemonSelectionSlice.selectors;
 export const { togglePokemonSelection, clearAllSelections } =
   pokemonSelectionSlice.actions;
 export default pokemonSelectionSlice.reducer;

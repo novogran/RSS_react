@@ -2,18 +2,17 @@ import { memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import './PokemonCard.css';
 import type { PokemonCardProps } from './types/pokemonCard.types';
-import { togglePokemonSelection } from '../store/pokemonSelectionSlice';
-import type { RootState } from '../../utils/store';
-
+import {
+  selectedPokemonSelector,
+  togglePokemonSelection,
+} from '../store/pokemonSelectionSlice';
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
 const PokemonCard = memo(
   ({ pokemon, isSelected, onSelect }: PokemonCardProps) => {
     const dispatch = useDispatch();
-    const selectedPokemons = useSelector(
-      (state: RootState) => state.pokemonSelection.selectedPokemons
-    );
-    const isChecked = !!selectedPokemons[pokemon.id];
+    const selectedPokemons = useSelector(selectedPokemonSelector);
+    const isChecked = !!selectedPokemons.find((item) => item.id === pokemon.id);
 
     const handleCheckboxClick = (e: React.MouseEvent<HTMLInputElement>) => {
       e.stopPropagation();

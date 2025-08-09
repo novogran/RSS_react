@@ -34,7 +34,7 @@ describe('Компонент SelectionFlyout', () => {
   it('не должен отображаться, когда нет выбранных покемонов', () => {
     const store = createMockStore({
       pokemonSelection: {
-        selectedPokemons: {},
+        selectedPokemons: [],
       },
     });
 
@@ -50,10 +50,10 @@ describe('Компонент SelectionFlyout', () => {
   it('должен отображать количество выбранных покемонов', () => {
     const store = createMockStore({
       pokemonSelection: {
-        selectedPokemons: {
-          25: mockPokemon,
-          6: { ...mockPokemon, id: 6, name: 'charizard' },
-        },
+        selectedPokemons: [
+          mockPokemon,
+          { ...mockPokemon, id: 6, name: 'charizard' },
+        ],
       },
     });
 
@@ -69,7 +69,7 @@ describe('Компонент SelectionFlyout', () => {
   it('должен вызывать clearAllSelections при клике на кнопку "Unselect all"', () => {
     const store = createMockStore({
       pokemonSelection: {
-        selectedPokemons: { 25: mockPokemon },
+        selectedPokemons: [mockPokemon],
       },
     });
 
@@ -89,10 +89,10 @@ describe('Компонент SelectionFlyout', () => {
   it('должен генерировать корректное содержимое CSV файла', async () => {
     const store = createMockStore({
       pokemonSelection: {
-        selectedPokemons: {
-          25: mockPokemon,
-          6: { ...mockPokemon, id: 6, name: 'charizard' },
-        },
+        selectedPokemons: [
+          mockPokemon,
+          { ...mockPokemon, id: 6, name: 'charizard' },
+        ],
       },
     });
 
