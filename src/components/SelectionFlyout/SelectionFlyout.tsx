@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { clearAllSelections } from '../store/pokemonSelectionSlice';
 import type { RootState } from '../../utils/store';
 import './SelectionFlyout.css';
-import { handleDownload } from '../../utils/common';
+import { handleDownloadCSV } from '../../utils/common';
 
 export const SelectionFlyout = () => {
   const dispatch = useDispatch();
@@ -24,7 +24,7 @@ export const SelectionFlyout = () => {
       </button>
       <button
         className="flyout-button download"
-        onClick={() => handleDownload(selectedPokemons, selectedCount)}
+        onClick={() => handleDownloadCSV(selectedPokemons, selectedCount)}
       >
         Download CSV
       </button>

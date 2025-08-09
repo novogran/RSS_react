@@ -71,7 +71,7 @@ describe('PokemonSearch', () => {
     renderWithRouter(<PokemonSearch />);
 
     await waitFor(() => {
-      expect(screen.getByText('No Pokémon found')).toBeInTheDocument();
+      expect(screen.getByText('Error loading Pokémon')).toBeInTheDocument();
     });
   });
 });

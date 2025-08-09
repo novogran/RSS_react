@@ -16,7 +16,7 @@ export const prepareData = (pokemonData: PokemonDetailResponse): Pokemon => ({
   stats: pokemonData.stats,
 });
 
-export const handleDownload = (
+export const handleDownloadCSV = (
   selectedPokemons: Pokemon[],
   selectedCount: number
 ) => {

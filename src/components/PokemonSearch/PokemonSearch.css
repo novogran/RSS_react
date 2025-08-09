@@ -105,3 +105,20 @@
   align-items: center;
   height: 300px;
 }
+
+.force-api-call-button {
+  margin: 0 auto;
+  margin-top: 20px;
+  background-color: #e74c3c;
+  color: var(--color-background);
+  border: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+.force-api-call-button:hover {
+  background-color: #b63c2f;
+}
