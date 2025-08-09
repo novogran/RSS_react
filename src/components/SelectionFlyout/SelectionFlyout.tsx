@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { clearAllSelections } from '../../utils/pokemonSelectionSlice';
+import { clearAllSelections } from '../store/pokemonSelectionSlice';
 import type { RootState } from '../../utils/store';
 import './SelectionFlyout.css';
 

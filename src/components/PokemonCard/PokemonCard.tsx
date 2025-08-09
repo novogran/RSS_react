@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import './PokemonCard.css';
 import type { PokemonCardProps } from './types/pokemonCard.types';
-import { togglePokemonSelection } from '../../utils/pokemonSelectionSlice';
+import { togglePokemonSelection } from '../store/pokemonSelectionSlice';
 import type { RootState } from '../../utils/store';
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);

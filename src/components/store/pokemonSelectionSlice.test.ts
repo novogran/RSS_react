@@ -4,12 +4,12 @@ import pokemonSelectionReducer, {
   clearAllSelections,
   type PokemonSelectionState,
 } from './pokemonSelectionSlice';
-import { mockPokemon } from '../test-utils/mocks/pokemonapi';
+import { mockPokemon } from '../../test-utils/mocks/pokemonapi';
 
 describe('pokemonSelectionSlice', () => {
   it('должен возвращать начальное состояние', () => {
     const initialState: PokemonSelectionState = {
-      selectedPokemons: {},
+      selectedPokemons: [],
     };
 
     expect(pokemonSelectionReducer(undefined, { type: 'unknown' })).toEqual(
@@ -19,7 +19,7 @@ describe('pokemonSelectionSlice', () => {
 
   it('должен добавлять покемона при первом вызове togglePokemonSelection', () => {
     const initialState: PokemonSelectionState = {
-      selectedPokemons: {},
+      selectedPokemons: [],
     };
 
     const state = pokemonSelectionReducer(
@@ -27,14 +27,12 @@ describe('pokemonSelectionSlice', () => {
       togglePokemonSelection(mockPokemon)
     );
 
-    expect(state.selectedPokemons).toEqual({
-      25: mockPokemon,
-    });
+    expect(state.selectedPokemons).toEqual([mockPokemon]);
   });
 
   it('должен удалять покемона при повторном вызове togglePokemonSelection', () => {
     const initialState: PokemonSelectionState = {
-      selectedPokemons: { 25: mockPokemon },
+      selectedPokemons: [mockPokemon],
     };
 
     const state = pokemonSelectionReducer(
@@ -42,7 +40,7 @@ describe('pokemonSelectionSlice', () => {
       togglePokemonSelection(mockPokemon)
     );
 
-    expect(state.selectedPokemons).toEqual({});
+    expect(state.selectedPokemons).toEqual([]);
   });
 
   it('должен добавлять нескольких покемонов', () => {
@@ -59,23 +57,20 @@ describe('pokemonSelectionSlice', () => {
 
     state = pokemonSelectionReducer(state, togglePokemonSelection(charizard));
 
-    expect(state.selectedPokemons).toEqual({
-      25: mockPokemon,
-      6: charizard,
-    });
+    expect(state.selectedPokemons).toEqual([mockPokemon, charizard]);
   });
 
   it('должен очищать все выбранные покемоны при clearAllSelections', () => {
     const initialState: PokemonSelectionState = {
-      selectedPokemons: {
-        25: mockPokemon,
-        6: { ...mockPokemon, id: 6, name: 'charizard' },
-      },
+      selectedPokemons: [
+        mockPokemon,
+        { ...mockPokemon, id: 6, name: 'charizard' },
+      ],
     };
 
     const state = pokemonSelectionReducer(initialState, clearAllSelections());
 
-    expect(state.selectedPokemons).toEqual({});
+    expect(state.selectedPokemons).toEqual([]);
   });
 
   it('должен корректно обрабатывать переключение разных покемонов', () => {
@@ -94,8 +89,6 @@ describe('pokemonSelectionSlice', () => {
 
     state = pokemonSelectionReducer(state, togglePokemonSelection(mockPokemon));
 
-    expect(state.selectedPokemons).toEqual({
-      6: charizard,
-    });
+    expect(state.selectedPokemons).toEqual([charizard]);
   });
 });
