@@ -2,26 +2,23 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import SearchBar from './SearchBar';
 import { vi } from 'vitest';
+import { LOCAL_STORAGE_SEARCHTERM_KEY } from '../../constants';
 
 describe('SearchBar', () => {
   const user = userEvent.setup();
-  const mockOnSearchChange = vi.fn();
   const mockOnSearchSubmit = vi.fn();
 
   beforeEach(() => {
-    mockOnSearchChange.mockClear();
     mockOnSearchSubmit.mockClear();
     vi.restoreAllMocks();
   });
 
+  afterEach(() => {
+    localStorage.clear();
+  });
+
   it('Рендерит input и кнопку', () => {
-    render(
-      <SearchBar
-        searchTerm=""
-        onSearchChange={mockOnSearchChange}
-        onSearchSubmit={mockOnSearchSubmit}
-      />
-    );
+    render(<SearchBar onSearchSubmit={mockOnSearchSubmit} />);
 
     expect(
       screen.getByPlaceholderText('Search Pokémon by name...')
@@ -29,68 +26,62 @@ describe('SearchBar', () => {
     expect(screen.getByRole('button', { name: 'Search' })).toBeInTheDocument();
   });
 
-  it('Отображает сохраненный поисковый запрос', () => {
-    render(
-      <SearchBar
-        searchTerm="pikachu"
-        onSearchChange={mockOnSearchChange}
-        onSearchSubmit={mockOnSearchSubmit}
-      />
+  it('Отображает сохраненный поисковый запрос из localStorage', () => {
+    localStorage.setItem(
+      LOCAL_STORAGE_SEARCHTERM_KEY,
+      JSON.stringify('pikachu')
     );
+    render(<SearchBar onSearchSubmit={mockOnSearchSubmit} />);
 
     expect(screen.getByDisplayValue('pikachu')).toBeInTheDocument();
   });
 
-  it('Вызывает onSearchChange при вводе текста', async () => {
-    render(
-      <SearchBar
-        searchTerm=""
-        onSearchChange={mockOnSearchChange}
-        onSearchSubmit={mockOnSearchSubmit}
-      />
-    );
-
+  it('Обновляет состояние при вводе текста', async () => {
+    render(<SearchBar onSearchSubmit={mockOnSearchSubmit} />);
     const input = screen.getByPlaceholderText('Search Pokémon by name...');
 
     await user.type(input, 'char');
 
-    expect(mockOnSearchChange).toHaveBeenNthCalledWith(1, 'c');
-    expect(mockOnSearchChange).toHaveBeenNthCalledWith(2, 'h');
-    expect(mockOnSearchChange).toHaveBeenNthCalledWith(3, 'a');
-    expect(mockOnSearchChange).toHaveBeenNthCalledWith(4, 'r');
-
-    expect(mockOnSearchChange).toHaveBeenCalledTimes(4);
+    expect(input).toHaveValue('char');
   });
 
-  it('Вызывает onSearchSubmit при отправке формы', async () => {
-    render(
-      <SearchBar
-        searchTerm="pikachu"
-        onSearchChange={mockOnSearchChange}
-        onSearchSubmit={mockOnSearchSubmit}
-      />
-    );
+  it('Вызывает onSearchSubmit с текущим значением при отправке формы', async () => {
+    render(<SearchBar onSearchSubmit={mockOnSearchSubmit} />);
+    const input = screen.getByPlaceholderText('Search Pokémon by name...');
+    const button = screen.getByRole('button', { name: 'Search' });
 
-    await user.click(screen.getByRole('button', { name: 'Search' }));
-    expect(mockOnSearchSubmit).toHaveBeenCalled();
+    await user.type(input, 'pikachu');
+    await user.click(button);
+
+    expect(mockOnSearchSubmit).toHaveBeenCalledWith('pikachu');
   });
 
-  it('Сохраняет значение в localStorage', async () => {
+  it('Сохраняет значение в localStorage при отправке формы', async () => {
     const setItemSpy = vi.spyOn(localStorage, 'setItem');
+    render(<SearchBar onSearchSubmit={mockOnSearchSubmit} />);
+    const input = screen.getByPlaceholderText('Search Pokémon by name...');
+    const button = screen.getByRole('button', { name: 'Search' });
 
-    render(
-      <SearchBar
-        searchTerm="pikachu"
-        onSearchChange={mockOnSearchChange}
-        onSearchSubmit={() => {
-          localStorage.setItem('pokemonSearchTerm', 'pikachu');
-        }}
-      />
+    await user.type(input, 'bulbasaur');
+    await user.click(button);
+
+    expect(setItemSpy).toHaveBeenCalledWith(
+      LOCAL_STORAGE_SEARCHTERM_KEY,
+      JSON.stringify('bulbasaur')
     );
+    const storedValue = localStorage.getItem(LOCAL_STORAGE_SEARCHTERM_KEY);
+    expect(storedValue).toBeTruthy();
+    if (storedValue) {
+      expect(JSON.parse(storedValue)).toBe('bulbasaur');
+    }
+  });
 
-    await user.click(screen.getByRole('button', { name: 'Search' }));
+  it('Не вызывает onSearchSubmit при пустом запросе', async () => {
+    render(<SearchBar onSearchSubmit={mockOnSearchSubmit} />);
+    const button = screen.getByRole('button', { name: 'Search' });
 
-    expect(setItemSpy).toHaveBeenCalledWith('pokemonSearchTerm', 'pikachu');
-    expect(localStorage.getItem('pokemonSearchTerm')).toBe('pikachu');
+    await user.click(button);
+
+    expect(mockOnSearchSubmit).not.toHaveBeenCalled();
   });
 });

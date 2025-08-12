@@ -1,0 +1,102 @@
+.about-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.about-content h1 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 1rem;
+}
+
+.developer-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 10px;
+}
+
+.avatar-placeholder {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: #3498db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 3rem;
+  margin-right: 2rem;
+  flex-shrink: 0;
+}
+
+.developer-details h2 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.developer-stats {
+  list-style: none;
+  padding: 0;
+}
+
+.developer-stats li {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.developer-story {
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.developer-story h3 {
+  color: #3498db;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.developer-story ul {
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+
+.developer-story li {
+  margin-bottom: 0.5rem;
+}
+
+.rs-school {
+  text-align: center;
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+}
+
+.rs-school h3 {
+  color: #3498db;
+}
+
+.rs-link {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.8rem 1.5rem;
+  background-color: #3498db;
+  color: white;
+  text-decoration: none;
+  border-radius: 50px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.rs-link:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+}

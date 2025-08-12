@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import { userEvent } from '@testing-library/user-event';
+import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 import ErrorBoundary from './ErrorBoundary';
@@ -56,14 +56,21 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>
     );
 
-    expect(errorSpy).toHaveBeenCalledWith(
-      'Error caught by ErrorBoundary:',
-      expect.any(Error),
-      expect.any(Object)
-    );
+    expect(errorSpy).toHaveBeenCalled();
+    expect(
+      errorSpy.mock.calls.some((call) =>
+        call.some(
+          (arg) =>
+            typeof arg === 'string' &&
+            (arg.includes('Uncaught error:') ||
+              arg.includes('Test error message'))
+        )
+      )
+    ).toBe(true);
   });
 
   it('Восстанавливает нормальный рендеринг после нажатия кнопки восстановления', async () => {
+    const user = userEvent.setup();
     let shouldThrow = true;
     const RecoverableErrorComponent = () => {
       if (shouldThrow) {
@@ -81,7 +88,7 @@ describe('ErrorBoundary', () => {
     expect(screen.getByText('Something went wrong')).toBeInTheDocument();
 
     shouldThrow = false;
-    userEvent.click(screen.getByRole('button', { name: 'Try to recover' }));
+    await user.click(screen.getByRole('button', { name: 'Try to recover' }));
 
     rerender(
       <ErrorBoundary>

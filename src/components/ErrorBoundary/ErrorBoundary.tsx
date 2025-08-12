@@ -1,26 +1,30 @@
-import React from 'react';
+import React, { type ErrorInfo } from 'react';
 import './ErrorBoundary.css';
-import type { ErrorBoundaryState } from '../../types/errorBoundary.types';
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+}
 
 class ErrorBoundary extends React.Component<
-  { children: React.ReactNode },
+  { children?: React.ReactNode },
   ErrorBoundaryState
 > {
-  constructor(props: { children: React.ReactNode }) {
-    super(props);
-    this.state = { hasError: false, errorInfo: '' };
-  }
+  state: ErrorBoundaryState = {
+    hasError: false,
+    error: null,
+  };
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return { hasError: true, errorInfo: error.message };
+    return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Error caught by ErrorBoundary:', error, errorInfo);
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('Uncaught error:', error, errorInfo);
   }
 
   handleReset = () => {
-    this.setState({ hasError: false, errorInfo: '' });
+    this.setState({ hasError: false, error: null });
   };
 
   render() {
@@ -29,7 +33,9 @@ class ErrorBoundary extends React.Component<
         <div className="error-boundary">
           <div className="error-content">
             <h3>Something went wrong</h3>
-            <p>{this.state.errorInfo || 'An unexpected error occurred.'}</p>
+            <p>
+              {this.state.error?.message || 'An unexpected error occurred.'}
+            </p>
             <button onClick={this.handleReset} className="error-button">
               Try to recover
             </button>

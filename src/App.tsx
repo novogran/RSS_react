@@ -1,19 +1,55 @@
-import React from 'react';
 import './App.css';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { PokemonSearch } from './components/PokemonSearch';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { NotFound } from './components/NotFound';
+import { AboutPage } from './components/AboutPage';
+import { Header } from './components/Header';
 
-class App extends React.Component {
-  render() {
-    return (
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: (
       <ErrorBoundary>
-        <div className="app-container">
-          <h1 className="app-title">Pokémon Search</h1>
-          <PokemonSearch />
-        </div>
+        <Header />
+        <PokemonSearch />
       </ErrorBoundary>
-    );
-  }
-}
+    ),
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: '/page/:page',
+    element: (
+      <ErrorBoundary>
+        <Header />
+        <PokemonSearch />
+      </ErrorBoundary>
+    ),
+  },
+  {
+    path: '/page/:page/details/:detailsId',
+    element: (
+      <ErrorBoundary>
+        <Header />
+        <PokemonSearch />
+      </ErrorBoundary>
+    ),
+  },
+  {
+    path: '/about',
+    element: (
+      <ErrorBoundary>
+        <Header />
+        <AboutPage />
+      </ErrorBoundary>
+    ),
+  },
+  {
+    path: '*',
+    element: <NotFound />,
+  },
+]);
+
+const App = () => <RouterProvider router={router} />;
 
 export default App;

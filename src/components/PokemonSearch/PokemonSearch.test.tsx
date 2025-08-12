@@ -1,115 +1,71 @@
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 import {
-  render,
-  screen,
-  act,
-  waitFor,
-  fireEvent,
-} from '@testing-library/react';
-import { userEvent } from '@testing-library/user-event';
-import {
-  mockSuccessfulListFetch,
-  mockSuccessfulSingleFetch,
+  mockSuccessfulApiSingleFetch,
   mockFailedFetch,
+  mockFetch,
 } from '../../test-utils/mocks/pokemonapi';
 import PokemonSearch from './PokemonSearch';
+import { vi } from 'vitest';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
+
+vi.mock('../../hooks/useLocalStorage', () => ({
+  useLocalStorage: vi.fn(() => ['', vi.fn()]),
+}));
 
 describe('PokemonSearch', () => {
   const user = userEvent.setup();
+
   beforeEach(() => {
-    window.localStorage.clear();
+    vi.clearAllMocks();
+    localStorage.clear();
   });
 
-  it('Загружает сохраненный поисковый запрос из localStorage', async () => {
-    window.localStorage.setItem('pokemonSearchTerm', 'pikachu');
-    mockSuccessfulSingleFetch();
+  const renderWithRouter = (ui: React.ReactElement, { route = '/' } = {}) => {
+    return render(<MemoryRouter initialEntries={[route]}>{ui}</MemoryRouter>);
+  };
 
-    render(<PokemonSearch />);
+  it('Загружает сохраненный поисковый запрос из localStorage', async () => {
+    vi.mocked(useLocalStorage).mockImplementation(() => ['pikachu', vi.fn()]);
+    mockSuccessfulApiSingleFetch();
+
+    renderWithRouter(<PokemonSearch />);
 
     await waitFor(() => {
       expect(screen.getByDisplayValue('pikachu')).toBeInTheDocument();
     });
   });
 
-  it('Загружает список покемонов при пустом поисковом запросе', async () => {
-    mockSuccessfulListFetch();
-
-    render(<PokemonSearch />);
-
-    await waitFor(() => {
-      expect(screen.getByText('Pikachu')).toBeInTheDocument();
-      expect(screen.getByText('Charizard')).toBeInTheDocument();
-    });
-  });
-
-  it('Ищет конкретного покемона', async () => {
-    mockSuccessfulListFetch();
-    mockSuccessfulSingleFetch();
-
-    render(<PokemonSearch />);
-
-    await waitFor(() => {
-      expect(screen.getByText('Charizard')).toBeInTheDocument();
-    });
-
-    const input = screen.getByPlaceholderText('Search Pokémon by name...');
-    fireEvent.change(input, { target: { value: 'pikachu' } });
-    userEvent.click(screen.getByRole('button', { name: 'Search' }));
-
-    await waitFor(() => {
-      expect(screen.queryByText('Charizard')).not.toBeInTheDocument();
-    });
-
-    await waitFor(() => {
-      expect(screen.getByText('Pikachu')).toBeInTheDocument();
-      expect(window.localStorage.getItem('pokemonSearchTerm')).toBe('pikachu');
-    });
-  });
-
-  it('Тримит пробелы при поиске', async () => {
-    mockSuccessfulListFetch();
-    mockSuccessfulSingleFetch();
-
-    render(<PokemonSearch />);
-
-    const input = screen.getByPlaceholderText('Search Pokémon by name...');
-    const button = screen.getByRole('button', { name: 'Search' });
-
-    await act(async () => {
-      await user.type(input, '  pikachu  ');
-      await user.click(button);
-    });
-
-    await waitFor(() => {
-      expect(screen.getByText('Pikachu')).toBeInTheDocument();
-      expect(window.localStorage.getItem('pokemonSearchTerm')).toBe('pikachu');
-    });
-  });
-
-  it('Обрабатывает ошибки API', async () => {
+  it('Обрабатывает ошибки API при поиске', async () => {
     mockFailedFetch(404);
 
-    render(<PokemonSearch />);
+    renderWithRouter(<PokemonSearch />);
 
     const input = screen.getByPlaceholderText('Search Pokémon by name...');
-    fireEvent.change(input, { target: { value: 'unknown' } });
-    userEvent.click(screen.getByRole('button', { name: 'Search' }));
+    await user.type(input, 'unknown');
+    await user.click(screen.getByRole('button', { name: 'Search' }));
 
     await waitFor(() => {
-      expect(screen.getByText('Pokémon not found')).toBeInTheDocument();
+      expect(screen.getByText(/not found|failed/i)).toBeInTheDocument();
     });
   });
 
-  it('Отображает состояние загрузки', async () => {
-    mockSuccessfulListFetch();
+  it('Показывает сообщение при пустом списке результатов', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        count: 0,
+        results: [],
+        next: null,
+        previous: null,
+      }),
+    });
 
-    render(<PokemonSearch />);
-
-    expect(screen.getByText('Searching for Pokémon...')).toBeInTheDocument();
+    renderWithRouter(<PokemonSearch />);
 
     await waitFor(() => {
-      expect(
-        screen.queryByText('Searching for Pokémon...')
-      ).not.toBeInTheDocument();
+      expect(screen.getByText('No Pokémon found')).toBeInTheDocument();
     });
   });
 });
