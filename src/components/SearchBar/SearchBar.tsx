@@ -1,11 +1,6 @@
 import React from 'react';
 import './SearchBar.css';
-
-interface SearchBarProps {
-  searchTerm: string;
-  onSearchChange: (term: string) => void;
-  onSearchSubmit: () => void;
-}
+import type { SearchBarProps } from '../../types/searchBar.types';
 
 class SearchBar extends React.Component<SearchBarProps> {
   handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

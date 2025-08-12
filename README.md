@@ -1,69 +1,57 @@
-# React + TypeScript + Vite
+# RCC React
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Deploy - [link](https://novogranreact.netlify.app/)
 
-Currently, two official plugins are available:
+## 🛠 Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**Core:**
 
-## Expanding the ESLint configuration
+- React
+- TypeScript
+- React Router
+- React Hooks
+- REST API
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+**Tooling:**
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- ESLint, Prettier
+- Husky Git hooks
+- Vite build system
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## 📜 Available Scripts
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+The project provides these npm scripts for development workflow:
+
+- `npm run dev` - starts Vite development server with hot reload (Runs on `http://localhost:5173` by default)
+
+- `npm run build` - Compiles TypeScript and builds production-ready assets (Outputs to `/dist` folder)
+
+- `npm run lint` - Runs ESLint to check all files for errors (Config: `.eslintrc.cjs`)
+
+- `npm run format:fix` - Formats all supported files with Prettier (Applies to: `.js, .ts, .tsx, .css,`)
+
+- `npm run test` - Runs Vitest in watch mode for unit tests (Looks for `*.test.ts` files)
+
+- `npm run test:coverage` - Runs tests and generates coverage report (Outputs to terminal)
+
+- `prepare` sets up Husky git hooks in `.husky/` directory
+
+## 🚀 How Start
+
+### 1. Clone repo
+
+```bash
+git clone https://github.com/novogran/RSS_react
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Instal deps
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x';
-import reactDom from 'eslint-plugin-react-dom';
+```bash
+npm install
+```
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+### Run dev server
+
+```bash
+npm run dev
 ```

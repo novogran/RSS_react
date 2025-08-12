@@ -1,7 +1,7 @@
 import React from 'react';
-import ErrorBoundary from './components/ErrorBoundary';
 import './App.css';
-import PokemonSearch from './components/PokemonSearch';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { PokemonSearch } from './components/PokemonSearch';
 
 class App extends React.Component {
   render() {
