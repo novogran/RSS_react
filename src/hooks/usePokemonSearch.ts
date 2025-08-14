@@ -11,11 +11,14 @@ import type {
   Pokemon,
   PokemonSearchState,
 } from '../components/PokemonSearch/types/pokemonSearch.types';
+import { LOCAL_STORAGE_SEARCHTERM_KEY } from '../constants';
+import { useLocalStorage } from './useLocalStorage';
 
 export const usePokemonSearch = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [savedSearchTerm] = useLocalStorage(LOCAL_STORAGE_SEARCHTERM_KEY, '');
   const [state, setState] = useState<PokemonSearchState>({
-    searchTerm: '',
+    searchTerm: savedSearchTerm,
     results: [],
     listLoading: false,
     error: null,
@@ -27,6 +30,10 @@ export const usePokemonSearch = () => {
   const [detailsLoading, setDetailsLoading] = useState(false);
 
   const loadData = useCallback(async (term: string, page: number) => {
+    const parsePokemonIdFromUrl = (url: string): number => {
+      const parts = url.split('/');
+      return parseInt(parts[parts.length - 2]);
+    };
     setState((prev) => ({ ...prev, listLoading: true, error: null }));
 
     try {
@@ -69,11 +76,6 @@ export const usePokemonSearch = () => {
     }
   }, []);
 
-  const parsePokemonIdFromUrl = (url: string): number => {
-    const parts = url.split('/');
-    return parseInt(parts[parts.length - 2]);
-  };
-
   const loadDetails = useCallback(async (id: number) => {
     setDetailsLoading(true);
     try {
@@ -83,20 +85,23 @@ export const usePokemonSearch = () => {
     }
   }, []);
 
-  const pageParam = searchParams.get('page');
+  const page = parseInt(searchParams.get('page') || '1', 10);
+  const detailsId = searchParams.get('details');
 
   useEffect(() => {
-    const page = parseInt(searchParams.get('page') || '1', 10);
-    const detailsId = searchParams.get('details');
-
-    setState((prev) => ({ ...prev, currentPage: page }));
+    setState((prev) => ({
+      ...prev,
+      currentPage: page,
+      searchTerm: state.searchTerm,
+    }));
     loadData(state.searchTerm, page);
+  }, [page, state.searchTerm, loadData]);
 
-    if (detailsId) {
-      const pokemon = state.results.find((p) => p.id.toString() === detailsId);
-      if (pokemon) loadDetails(pokemon.id);
-    }
-  }, [state.searchTerm, pageParam]);
+  useEffect(() => {
+    if (!detailsId) return;
+    const pokemon = state.results.find((p) => p.id.toString() === detailsId);
+    if (pokemon) loadDetails(pokemon.id);
+  }, [detailsId, state.results, loadDetails]);
 
   return {
     state,

@@ -1,32 +1,38 @@
 import { render, screen } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { store } from '../../utils/store';
 import ResultsList from './ResultsList';
 import { mockPokemon } from '../../test-utils/mocks/pokemonapi';
 
 describe('ResultsList', () => {
   it('Отображает состояние загрузки', () => {
     render(
-      <ResultsList
-        loading={true}
-        results={[]}
-        error={null}
-        onPokemonSelect={function (): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
+      <Provider store={store}>
+        <ResultsList
+          loading={true}
+          results={[]}
+          error={null}
+          onPokemonSelect={function (): void {
+            throw new Error('Function not implemented.');
+          }}
+        />
+      </Provider>
     );
     expect(screen.getByText('Loading Pokémon...')).toBeInTheDocument();
   });
 
   it('Отображает сообщение об ошибке', () => {
     render(
-      <ResultsList
-        loading={false}
-        results={[]}
-        error="API error"
-        onPokemonSelect={function (): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
+      <Provider store={store}>
+        <ResultsList
+          loading={false}
+          results={[]}
+          error="API error"
+          onPokemonSelect={function (): void {
+            throw new Error('Function not implemented.');
+          }}
+        />
+      </Provider>
     );
     expect(screen.getByText('Error loading Pokémon')).toBeInTheDocument();
     expect(screen.getByText('API error')).toBeInTheDocument();
@@ -34,14 +40,16 @@ describe('ResultsList', () => {
 
   it('Отображает сообщение о пустых результатах', () => {
     render(
-      <ResultsList
-        loading={false}
-        results={[]}
-        error={null}
-        onPokemonSelect={function (): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
+      <Provider store={store}>
+        <ResultsList
+          loading={false}
+          results={[]}
+          error={null}
+          onPokemonSelect={function (): void {
+            throw new Error('Function not implemented.');
+          }}
+        />
+      </Provider>
     );
     expect(screen.getByText('No Pokémon found')).toBeInTheDocument();
     expect(
@@ -51,22 +59,24 @@ describe('ResultsList', () => {
 
   it('Отображает список покемонов', () => {
     render(
-      <ResultsList
-        loading={false}
-        results={[
-          mockPokemon,
-          {
-            ...mockPokemon,
-            id: 6,
-            name: 'charizard',
-            url: '',
-          },
-        ]}
-        error={null}
-        onPokemonSelect={function (): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
+      <Provider store={store}>
+        <ResultsList
+          loading={false}
+          results={[
+            mockPokemon,
+            {
+              ...mockPokemon,
+              id: 6,
+              name: 'charizard',
+              url: '',
+            },
+          ]}
+          error={null}
+          onPokemonSelect={function (): void {
+            throw new Error('Function not implemented.');
+          }}
+        />
+      </Provider>
     );
 
     expect(screen.getByText('Search Results')).toBeInTheDocument();
@@ -76,14 +86,16 @@ describe('ResultsList', () => {
 
   it('Отображает типы и способности', () => {
     render(
-      <ResultsList
-        loading={false}
-        results={[mockPokemon]}
-        error={null}
-        onPokemonSelect={function (): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
+      <Provider store={store}>
+        <ResultsList
+          loading={false}
+          results={[mockPokemon]}
+          error={null}
+          onPokemonSelect={function (): void {
+            throw new Error('Function not implemented.');
+          }}
+        />
+      </Provider>
     );
 
     expect(screen.getByText('Electric')).toBeInTheDocument();
@@ -93,21 +105,23 @@ describe('ResultsList', () => {
 
   it('Обрабатывает отсутствие данных', () => {
     render(
-      <ResultsList
-        loading={false}
-        results={[
-          {
-            ...mockPokemon,
-            types: [],
-            abilities: [],
-            url: '',
-          },
-        ]}
-        error={null}
-        onPokemonSelect={function (): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
+      <Provider store={store}>
+        <ResultsList
+          loading={false}
+          results={[
+            {
+              ...mockPokemon,
+              types: [],
+              abilities: [],
+              url: '',
+            },
+          ]}
+          error={null}
+          onPokemonSelect={function (): void {
+            throw new Error('Function not implemented.');
+          }}
+        />
+      </Provider>
     );
 
     expect(screen.queryByText('Electric')).not.toBeInTheDocument();

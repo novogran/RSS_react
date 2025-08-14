@@ -1,0 +1,36 @@
+.selection-flyout {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--color-card-bg);
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  z-index: 1000;
+}
+
+.selection-info {
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.flyout-button {
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.flyout-button.unselect-all {
+  background-color: #f44336;
+  color: white;
+}
+
+.flyout-button.download {
+  background-color: #4caf50;
+  color: white;
+}

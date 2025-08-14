@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import './Header.css';
+import { ThemeSwitcher } from '../ThemeSwitcher';
 
 const Header = () => {
   const location = useLocation();
@@ -9,6 +10,7 @@ const Header = () => {
       <div className="header-content">
         <h1 className="app-title">
           <Link to="/">Pokémon Search</Link>
+          <ThemeSwitcher />
         </h1>
 
         <nav className="nav-links">

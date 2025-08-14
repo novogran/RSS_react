@@ -4,6 +4,7 @@ import { Pagination } from '../Pagination';
 import { PokemonDetails } from '../PokemonDetails';
 import { ITEMS_PER_PAGE } from '../../constants';
 import { usePokemonSearch } from '../../hooks/usePokemonSearch';
+import { SelectionFlyout } from '../SelectionFlyout';
 
 export const PokemonSearch = () => {
   const {
@@ -57,6 +58,7 @@ export const PokemonSearch = () => {
           </div>
         </div>
       </div>
+      <SelectionFlyout />
     </div>
   );
 };
