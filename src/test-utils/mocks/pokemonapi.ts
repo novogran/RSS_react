@@ -3,7 +3,7 @@ import type {
   Pokemon,
   PokemonDetailResponse,
   PokemonListResponse,
-} from '../../components/PokemonSearch/types/pokemonSearch.types';
+} from '../../types/pokemonSearch.types';
 
 export const mockPokemon: Pokemon = {
   id: 25,

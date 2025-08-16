@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { store } from '../../utils/store';
+import { store } from '../../store/store';
 import PokemonCard from './PokemonCard';
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';

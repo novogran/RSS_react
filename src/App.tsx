@@ -7,7 +7,7 @@ import { AboutPage } from './components/AboutPage';
 import { Header } from './components/Header';
 import { ThemeProvider } from './context/ThemeProvider';
 import { Provider } from 'react-redux';
-import { store } from './utils/store';
+import { store } from './store/store';
 
 const router = createBrowserRouter([
   {

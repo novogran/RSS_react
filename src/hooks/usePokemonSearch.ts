@@ -1,135 +1,167 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-
-import { prepareData } from '../utils/common';
-import {
-  fetchPokemonByName,
-  fetchPokemonList,
-  fetchPokemonDetails,
-} from '../utils/api';
-import type {
-  Pokemon,
-  PokemonSearchState,
-} from '../components/PokemonSearch/types/pokemonSearch.types';
 import { LOCAL_STORAGE_SEARCHTERM_KEY } from '../constants';
 import { useLocalStorage } from './useLocalStorage';
+import type { Pokemon, PokemonSearchState } from '../types/pokemonSearch.types';
+import {
+  useGetPokemonListQuery,
+  useGetPokemonByNameQuery,
+  useGetPokemonDetailsQuery,
+} from '../store/pokemonApi';
+import type { FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
 
 export const usePokemonSearch = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [savedSearchTerm] = useLocalStorage(LOCAL_STORAGE_SEARCHTERM_KEY, '');
+  const [searchTerm, setSearchTerm] = useState(savedSearchTerm || '');
+  const page = parseInt(searchParams.get('page') || '1', 10);
+  const detailsId = searchParams.get('details');
+  const [showDetails, setShowDetails] = useState(false);
+
+  const {
+    data: listData,
+    isFetching: listLoading,
+    error: listError,
+    refetch: refetchList,
+  } = useGetPokemonListQuery(page, {
+    skip: !!searchTerm,
+  });
+
+  const {
+    data: searchData,
+    isFetching: searchLoading,
+    error: searchError,
+    refetch: refetchSearch,
+  } = useGetPokemonByNameQuery(searchTerm, {
+    skip: !searchTerm,
+  });
+
+  const {
+    data: pokemonDetails,
+    isFetching: detailsLoading,
+    error: detailsError,
+    refetch: refetchDetails,
+  } = useGetPokemonDetailsQuery(Number(detailsId), {
+    skip: !detailsId,
+  });
+
   const [state, setState] = useState<PokemonSearchState>({
     searchTerm: savedSearchTerm,
     results: [],
     listLoading: false,
     error: null,
-    currentPage: 1,
+    currentPage: page,
     totalCount: 0,
   });
 
-  const [selectedPokemon, setSelectedPokemon] = useState<Pokemon | null>(null);
-  const [detailsLoading, setDetailsLoading] = useState(false);
+  useEffect(() => {
+    setShowDetails(!!detailsId);
+  }, [detailsId]);
 
-  const loadData = useCallback(async (term: string, page: number) => {
-    const parsePokemonIdFromUrl = (url: string): number => {
-      const parts = url.split('/');
-      return parseInt(parts[parts.length - 2]);
-    };
-    setState((prev) => ({ ...prev, listLoading: true, error: null }));
-
-    try {
-      let results: Pokemon[];
-      let totalCount: number;
-
-      if (term.trim()) {
-        const pokemon = prepareData(await fetchPokemonByName(term));
-        results = [pokemon];
-        totalCount = 1;
-      } else {
-        const listData = await fetchPokemonList(page);
-
-        results = await Promise.all(
-          listData.results.map(async (p) => {
-            const details = await fetchPokemonDetails(
-              parsePokemonIdFromUrl(p.url)
-            );
-            return prepareData(details);
-          })
-        );
-
-        totalCount = listData.count;
-      }
-
+  useEffect(() => {
+    if (listData && !searchTerm) {
       setState((prev) => ({
         ...prev,
-        results,
-        totalCount,
+        results: listData,
+        totalCount: 1000,
         listLoading: false,
+        error: null,
       }));
-    } catch (error) {
+    }
+  }, [listData, searchTerm]);
+
+  useEffect(() => {
+    if (searchTerm && searchData) {
       setState((prev) => ({
         ...prev,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        results: [searchData],
+        totalCount: 1,
         listLoading: false,
-        results: [],
-        totalCount: 0,
+        error: null,
       }));
     }
-  }, []);
+  }, [page, searchData, searchTerm]);
 
-  const loadDetails = useCallback(async (id: number) => {
-    setDetailsLoading(true);
-    try {
-      setSelectedPokemon(prepareData(await fetchPokemonDetails(id)));
-    } finally {
-      setDetailsLoading(false);
-    }
-  }, []);
+  useEffect(() => {
+    const error = listError || searchError || detailsError;
 
-  const page = parseInt(searchParams.get('page') || '1', 10);
-  const detailsId = searchParams.get('details');
+    setState((prev) => ({
+      ...prev,
+      error: getErrorMessage(error),
+      listLoading: false,
+    }));
+  }, [listError, searchError, detailsError]);
 
   useEffect(() => {
     setState((prev) => ({
       ...prev,
       currentPage: page,
-      searchTerm: state.searchTerm,
+      listLoading: listLoading || searchLoading,
     }));
-    loadData(state.searchTerm, page);
-  }, [page, state.searchTerm, loadData]);
+  }, [page, listLoading, searchLoading]);
 
-  useEffect(() => {
-    if (!detailsId) return;
-    const pokemon = state.results.find((p) => p.id.toString() === detailsId);
-    if (pokemon) loadDetails(pokemon.id);
-  }, [detailsId, state.results, loadDetails]);
+  const handlePokemonSelect = (pokemon: Pokemon) => {
+    if (detailsId === pokemon.id.toString()) {
+      setSearchParams(
+        { page: state.currentPage.toString() },
+        { replace: true }
+      );
+    } else {
+      setSearchParams(
+        {
+          page: state.currentPage.toString(),
+          details: pokemon.id.toString(),
+        },
+        { replace: true }
+      );
+    }
+  };
+
+  const handleCloseDetails = () => {
+    setSearchParams({ page: state.currentPage.toString() }, { replace: true });
+  };
+
+  const handleRefresh = () => {
+    if (searchTerm) {
+      refetchSearch();
+    } else {
+      refetchList();
+    }
+    if (detailsId) refetchDetails();
+  };
+
+  const getErrorMessage = (error: unknown): string => {
+    let errorMessage = 'Failed to fetch Pokémon data';
+
+    if (error && typeof error === 'object' && 'status' in error) {
+      const apiError = error as FetchBaseQueryError;
+      if (typeof apiError.data === 'object' && apiError.data !== null) {
+        errorMessage =
+          (apiError.data as { message?: string }).message || errorMessage;
+      }
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    return errorMessage;
+  };
 
   return {
-    state,
-    selectedPokemon,
-    detailsLoading,
+    state: {
+      ...state,
+      searchTerm,
+    },
+    selectedPokemon: showDetails ? pokemonDetails : null,
+    detailsLoading: showDetails ? detailsLoading : false,
     handleSearch: (term: string) => {
-      setSelectedPokemon(null);
-      setState((prev) => ({ ...prev, searchTerm: term }));
+      setSearchTerm(term);
       setSearchParams({ page: '1' });
     },
     handlePageChange: (page: number) => {
       setSearchParams({ page: page.toString() });
-      setSelectedPokemon(null);
     },
-    handlePokemonSelect: (pokemon: Pokemon) => {
-      if (selectedPokemon?.id === pokemon.id) {
-        setSelectedPokemon(null);
-        return;
-      }
-      setSearchParams(
-        { page: state.currentPage.toString(), details: pokemon.id.toString() },
-        { replace: true }
-      );
-      loadDetails(pokemon.id);
-    },
-    handleCloseDetails: () => {
-      setSelectedPokemon(null);
-      setSearchParams({ page: state.currentPage.toString() });
-    },
+    handlePokemonSelect,
+    handleCloseDetails,
+    handleRefresh,
   };
 };

@@ -5,6 +5,7 @@ import { PokemonDetails } from '../PokemonDetails';
 import { ITEMS_PER_PAGE } from '../../constants';
 import { usePokemonSearch } from '../../hooks/usePokemonSearch';
 import { SelectionFlyout } from '../SelectionFlyout';
+import './PokemonSearch.css';
 
 export const PokemonSearch = () => {
   const {
@@ -15,6 +16,7 @@ export const PokemonSearch = () => {
     handlePageChange,
     handlePokemonSelect,
     handleCloseDetails,
+    handleRefresh,
   } = usePokemonSearch();
 
   return (
@@ -44,6 +46,14 @@ export const PokemonSearch = () => {
                 onPokemonSelect={handlePokemonSelect}
                 selectedPokemonId={selectedPokemon?.id}
               />
+              {!state.error && (
+                <button
+                  className="force-api-call-button"
+                  onClick={handleRefresh}
+                >
+                  RefreshData
+                </button>
+              )}
             </div>
 
             {selectedPokemon && (

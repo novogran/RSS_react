@@ -4,7 +4,7 @@ import pokemonSelectionReducer, {
   clearAllSelections,
   type PokemonSelectionState,
 } from './pokemonSelectionSlice';
-import { mockPokemon } from '../../test-utils/mocks/pokemonapi';
+import { mockPokemon } from '../test-utils/mocks/pokemonapi';
 
 describe('pokemonSelectionSlice', () => {
   it('должен возвращать начальное состояние', () => {
