@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { clearAllSelections } from '../store/pokemonSelectionSlice';
-import type { RootState } from '../../utils/store';
+import { clearAllSelections } from '../../store/pokemonSelectionSlice';
+import type { RootState } from '../../store/store';
 import './SelectionFlyout.css';
 import { handleDownloadCSV } from '../../utils/common';
 

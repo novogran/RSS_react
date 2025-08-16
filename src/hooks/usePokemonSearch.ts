@@ -2,15 +2,12 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { LOCAL_STORAGE_SEARCHTERM_KEY } from '../constants';
 import { useLocalStorage } from './useLocalStorage';
-import type {
-  Pokemon,
-  PokemonSearchState,
-} from '../components/PokemonSearch/types/pokemonSearch.types';
+import type { Pokemon, PokemonSearchState } from '../types/pokemonSearch.types';
 import {
   useGetPokemonListQuery,
   useGetPokemonByNameQuery,
   useGetPokemonDetailsQuery,
-} from '../utils/api';
+} from '../store/pokemonApi';
 import type { FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
 
 export const usePokemonSearch = () => {
@@ -25,6 +22,7 @@ export const usePokemonSearch = () => {
     data: listData,
     isFetching: listLoading,
     error: listError,
+    refetch: refetchList,
   } = useGetPokemonListQuery(page, {
     skip: !!searchTerm,
   });
@@ -33,6 +31,7 @@ export const usePokemonSearch = () => {
     data: searchData,
     isFetching: searchLoading,
     error: searchError,
+    refetch: refetchSearch,
   } = useGetPokemonByNameQuery(searchTerm, {
     skip: !searchTerm,
   });
@@ -41,6 +40,7 @@ export const usePokemonSearch = () => {
     data: pokemonDetails,
     isFetching: detailsLoading,
     error: detailsError,
+    refetch: refetchDetails,
   } = useGetPokemonDetailsQuery(Number(detailsId), {
     skip: !detailsId,
   });
@@ -85,25 +85,11 @@ export const usePokemonSearch = () => {
   useEffect(() => {
     const error = listError || searchError || detailsError;
 
-    if (error) {
-      let errorMessage = 'Failed to fetch Pokémon data';
-
-      if ('status' in error) {
-        const apiError = error as FetchBaseQueryError;
-        if (typeof apiError.data === 'object' && apiError.data !== null) {
-          errorMessage =
-            (apiError.data as { message?: string }).message || errorMessage;
-        }
-      } else if (error instanceof Error) {
-        errorMessage = error.message;
-      }
-
-      setState((prev) => ({
-        ...prev,
-        error: errorMessage,
-        listLoading: false,
-      }));
-    }
+    setState((prev) => ({
+      ...prev,
+      error: getErrorMessage(error),
+      listLoading: false,
+    }));
   }, [listError, searchError, detailsError]);
 
   useEffect(() => {
@@ -135,21 +121,6 @@ export const usePokemonSearch = () => {
     setSearchParams({ page: state.currentPage.toString() }, { replace: true });
   };
 
-  const { refetch: refetchList } = useGetPokemonListQuery(page, {
-    skip: !!searchTerm,
-  });
-
-  const { refetch: refetchSearch } = useGetPokemonByNameQuery(searchTerm, {
-    skip: !searchTerm,
-  });
-
-  const { refetch: refetchDetails } = useGetPokemonDetailsQuery(
-    Number(detailsId),
-    {
-      skip: !detailsId,
-    }
-  );
-
   const handleRefresh = () => {
     if (searchTerm) {
       refetchSearch();
@@ -157,6 +128,22 @@ export const usePokemonSearch = () => {
       refetchList();
     }
     if (detailsId) refetchDetails();
+  };
+
+  const getErrorMessage = (error: unknown): string => {
+    let errorMessage = 'Failed to fetch Pokémon data';
+
+    if (error && typeof error === 'object' && 'status' in error) {
+      const apiError = error as FetchBaseQueryError;
+      if (typeof apiError.data === 'object' && apiError.data !== null) {
+        errorMessage =
+          (apiError.data as { message?: string }).message || errorMessage;
+      }
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    return errorMessage;
   };
 
   return {

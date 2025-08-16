@@ -2,7 +2,7 @@ import { API_URL } from '../constants';
 import type {
   PokemonDetailResponse,
   Pokemon,
-} from '../components/PokemonSearch/types/pokemonSearch.types';
+} from '../types/pokemonSearch.types';
 
 export const prepareData = (pokemonData: PokemonDetailResponse): Pokemon => ({
   name: pokemonData.name,

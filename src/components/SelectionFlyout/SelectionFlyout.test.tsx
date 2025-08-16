@@ -5,7 +5,7 @@ import SelectionFlyout from './SelectionFlyout';
 import pokemonSelectionReducer, {
   clearAllSelections,
   type PokemonSelectionState,
-} from '../store/pokemonSelectionSlice';
+} from '../../store/pokemonSelectionSlice';
 import { mockPokemon } from '../../test-utils/mocks/pokemonapi';
 import { vi } from 'vitest';
 
