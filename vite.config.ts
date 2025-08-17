@@ -1,12 +1,21 @@
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vitest/config';
+import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
   test: {
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/test-utils/setup.ts',
+    alias: {
+      '@/i18n/navigation': path.resolve(__dirname, './src/i18n/navigation'),
+    },
     coverage: {
       include: ['src/**/*.{js,jsx,ts,tsx}'],
       exclude: [
