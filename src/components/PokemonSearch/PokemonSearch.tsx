@@ -1,3 +1,5 @@
+'use client';
+
 import { SearchBar } from '../SearchBar';
 import { ResultsList } from '../ResultsList';
 import { Pagination } from '../Pagination';
@@ -6,6 +8,7 @@ import { ITEMS_PER_PAGE } from '../../constants';
 import { usePokemonSearch } from '../../hooks/usePokemonSearch';
 import { SelectionFlyout } from '../SelectionFlyout';
 import './PokemonSearch.css';
+import { useTranslations } from 'next-intl';
 
 export const PokemonSearch = () => {
   const {
@@ -18,6 +21,8 @@ export const PokemonSearch = () => {
     handleCloseDetails,
     handleRefresh,
   } = usePokemonSearch();
+
+  const t = useTranslations('PokemonSearch');
 
   return (
     <div className="content-wrapper">
@@ -50,8 +55,9 @@ export const PokemonSearch = () => {
                 <button
                   className="force-api-call-button"
                   onClick={handleRefresh}
+                  aria-label={t('refreshButtonLabel')}
                 >
-                  RefreshData
+                  {t('refreshButtonText')}
                 </button>
               )}
             </div>

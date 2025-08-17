@@ -1,32 +1,38 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { clearAllSelections } from '../../store/pokemonSelectionSlice';
-import type { RootState } from '../../store/store';
+import { clearAllSelections } from '@/store/pokemonSelectionSlice';
+import type { RootState } from '@/store/store';
 import './SelectionFlyout.css';
-import { handleDownloadCSV } from '../../utils/common';
+import { handleDownloadCSV } from '@/utils/common';
+import { useTranslations } from 'next-intl';
 
 export const SelectionFlyout = () => {
   const dispatch = useDispatch();
+  const t = useTranslations('SelectionFlyout');
   const selectedPokemons = useSelector(
     (state: RootState) => state.pokemonSelection.selectedPokemons
   );
-  const selectedCount = Object.keys(selectedPokemons).length;
+  const selectedCount = selectedPokemons.length;
 
   if (selectedCount === 0) return null;
 
   return (
     <div className="selection-flyout">
-      <div className="selection-info">{selectedCount} Pokémon selected</div>
+      <div className="selection-info">
+        {t('selectedCount', { count: selectedCount })}
+      </div>
       <button
         className="flyout-button unselect-all"
         onClick={() => dispatch(clearAllSelections())}
+        aria-label={t('unselectAllAriaLabel')}
       >
-        Unselect all
+        {t('unselectAllText')}
       </button>
       <button
         className="flyout-button download"
         onClick={() => handleDownloadCSV(selectedPokemons, selectedCount)}
+        aria-label={t('downloadAriaLabel')}
       >
-        Download CSV
+        {t('downloadText')}
       </button>
     </div>
   );
