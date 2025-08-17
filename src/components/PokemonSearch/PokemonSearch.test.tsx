@@ -13,7 +13,6 @@ import { vi } from 'vitest';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { NextIntlClientProvider } from 'next-intl';
 
-// vi.mock('next/router', () => require('next-router-mock'));
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
     push: vi.fn(),

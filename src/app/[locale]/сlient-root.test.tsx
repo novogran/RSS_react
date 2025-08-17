@@ -5,7 +5,6 @@ import { ThemeProvider } from '@/context/ThemeProvider';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ClientRoot } from './сlient-root';
 
-// Мокируем дочерние компоненты и провайдеры
 vi.mock('react-redux', () => ({
   Provider: vi.fn(({ children }) => (
     <div data-testid="redux-provider">{children}</div>
@@ -25,7 +24,6 @@ vi.mock('@/components/ErrorBoundary', () => ({
 }));
 
 describe('ClientRoot', () => {
-  // Тест 1: Проверяем корректное отображение компонента
   it('должен корректно отображаться', () => {
     const { getByTestId, getByText } = render(
       <ClientRoot>
@@ -39,7 +37,6 @@ describe('ClientRoot', () => {
     expect(getByText('Test Child')).toBeInTheDocument();
   });
 
-  // Тест 2: Проверяем правильный порядок вложенности провайдеров
   it('должен оборачивать детей в правильном порядке: Redux -> Theme -> ErrorBoundary', () => {
     render(
       <ClientRoot>
@@ -47,10 +44,8 @@ describe('ClientRoot', () => {
       </ClientRoot>
     );
 
-    // Проверяем порядок вызовов моков
     const providerCalls = (Provider as jest.Mock).mock.calls;
 
-    // Redux Provider должен быть самым внешним
     expect(providerCalls[0][0].children).toEqual(
       expect.objectContaining({
         type: ThemeProvider,
@@ -66,7 +61,6 @@ describe('ClientRoot', () => {
     );
   });
 
-  // Тест 3: Проверяем передачу children через все обертки
   it('должен корректно передавать children через все провайдеры', () => {
     const testChild = <div data-testid="test-child">Test Content</div>;
     const { getByTestId } = render(<ClientRoot>{testChild}</ClientRoot>);

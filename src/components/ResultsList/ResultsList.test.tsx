@@ -6,7 +6,6 @@ import { mockPokemon } from '../../test-utils/mocks/pokemonapi';
 import { NextIntlClientProvider } from 'next-intl';
 import { vi } from 'vitest';
 
-// Mock translations
 const messages = {
   ResultsList: {
     loadingText: 'Loading Pokémon...',

@@ -4,12 +4,10 @@ import { useTheme } from '../../hooks/useTheme';
 import ThemeSwitcher from './ThemeSwitcher';
 import { NextIntlClientProvider } from 'next-intl';
 
-// Mock the useTheme hook
 vi.mock('../../hooks/useTheme', () => ({
   useTheme: vi.fn(),
 }));
 
-// Mock translations
 const messages = {
   ThemeSwitcher: {
     light: 'Light',

@@ -5,7 +5,6 @@ import { vi } from 'vitest';
 import { LOCAL_STORAGE_SEARCHTERM_KEY } from '../../constants';
 import { NextIntlClientProvider } from 'next-intl';
 
-// Mock translations
 const messages = {
   SearchBar: {
     searchPlaceholder: 'Search Pokémon by name...',
