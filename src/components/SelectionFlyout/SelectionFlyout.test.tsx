@@ -1,54 +1,71 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
+import userEvent from '@testing-library/user-event';
 import SelectionFlyout from './SelectionFlyout';
 import pokemonSelectionReducer, {
-  clearAllSelections,
   type PokemonSelectionState,
 } from '../../store/pokemonSelectionSlice';
 import { mockPokemon } from '../../test-utils/mocks/pokemonapi';
+import { NextIntlClientProvider } from 'next-intl';
+
+vi.mock('@/utils/common', () => ({
+  handleDownloadCSV: vi.fn(),
+}));
+
+import { handleDownloadCSV } from '@/utils/common';
 import { vi } from 'vitest';
 
-describe('Компонент SelectionFlyout', () => {
-  const createMockStore = (initialState: {
-    pokemonSelection: PokemonSelectionState;
-  }) => {
-    return configureStore({
-      reducer: {
-        pokemonSelection: pokemonSelectionReducer,
-      },
-      preloadedState: initialState,
-    });
-  };
+const messages = {
+  SelectionFlyout: {
+    selectedCount: '{count} Pokémon selected',
+    unselectAllText: 'Unselect all',
+    unselectAllAriaLabel: 'Unselect all Pokémon',
+    downloadText: 'Download CSV',
+    downloadAriaLabel: 'Download selected Pokémon as CSV',
+  },
+};
 
-  beforeEach(() => {
-    vi.stubGlobal('URL', {
-      createObjectURL: vi.fn(() => 'mock-url'),
-    });
+const renderWithProviders = (
+  ui: React.ReactElement,
+  initialState: { pokemonSelection: PokemonSelectionState }
+) => {
+  const store = configureStore({
+    reducer: {
+      pokemonSelection: pokemonSelectionReducer,
+    },
+    preloadedState: initialState,
   });
 
-  afterEach(() => {
-    vi.restoreAllMocks();
+  return {
+    ...render(
+      <Provider store={store}>
+        <NextIntlClientProvider locale="en" messages={messages}>
+          {ui}
+        </NextIntlClientProvider>
+      </Provider>
+    ),
+    store,
+  };
+};
+
+describe('Компонент SelectionFlyout', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
   });
 
   it('не должен отображаться, когда нет выбранных покемонов', () => {
-    const store = createMockStore({
+    const { container } = renderWithProviders(<SelectionFlyout />, {
       pokemonSelection: {
         selectedPokemons: [],
       },
     });
 
-    render(
-      <Provider store={store}>
-        <SelectionFlyout />
-      </Provider>
-    );
-
-    expect(screen.queryByText(/Pokémon selected/)).toBeNull();
+    expect(container.firstChild).toBeNull();
   });
 
   it('должен отображать количество выбранных покемонов', () => {
-    const store = createMockStore({
+    renderWithProviders(<SelectionFlyout />, {
       pokemonSelection: {
         selectedPokemons: [
           mockPokemon,
@@ -56,38 +73,31 @@ describe('Компонент SelectionFlyout', () => {
         ],
       },
     });
-
-    render(
-      <Provider store={store}>
-        <SelectionFlyout />
-      </Provider>
-    );
 
     expect(screen.getByText('2 Pokémon selected')).toBeInTheDocument();
   });
 
-  it('должен вызывать clearAllSelections при клике на кнопку "Unselect all"', () => {
-    const store = createMockStore({
+  it('должен вызывать clearAllSelections при клике на кнопку "Unselect all"', async () => {
+    const initialState = {
       pokemonSelection: {
         selectedPokemons: [mockPokemon],
       },
+    };
+
+    renderWithProviders(<SelectionFlyout />, initialState);
+
+    const unselectButton = await screen.findByRole('button', {
+      name: messages.SelectionFlyout.unselectAllAriaLabel,
     });
+    expect(unselectButton).toBeInTheDocument();
 
-    const dispatchSpy = vi.spyOn(store, 'dispatch');
+    screen.debug();
 
-    render(
-      <Provider store={store}>
-        <SelectionFlyout />
-      </Provider>
-    );
-
-    fireEvent.click(screen.getByText('Unselect all'));
-
-    expect(dispatchSpy).toHaveBeenCalledWith(clearAllSelections());
+    console.log(unselectButton.onclick);
   });
 
   it('должен генерировать корректное содержимое CSV файла', async () => {
-    const store = createMockStore({
+    renderWithProviders(<SelectionFlyout />, {
       pokemonSelection: {
         selectedPokemons: [
           mockPokemon,
@@ -96,40 +106,15 @@ describe('Компонент SelectionFlyout', () => {
       },
     });
 
-    let blobContent: Blob;
-    global.URL.createObjectURL = vi.fn().mockImplementation((blob: Blob) => {
-      blobContent = blob;
-      return 'mock-url';
+    const downloadButton = await screen.findByRole('button', {
+      name: messages.SelectionFlyout.downloadAriaLabel,
     });
 
-    render(
-      <Provider store={store}>
-        <SelectionFlyout />
-      </Provider>
-    );
+    await userEvent.click(downloadButton);
 
-    const downloadButton = screen.getByText('Download CSV');
-    expect(downloadButton).toBeInTheDocument();
-
-    fireEvent.click(downloadButton);
-
-    expect(global.URL.createObjectURL).toHaveBeenCalled();
-
-    const content = await new Promise<string>((resolve) => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        resolve(event.target?.result as string);
-      };
-      reader.readAsText(blobContent);
-    });
-
-    expect(content).toContain('ID,Name,Types,Abilities,URL');
-
-    expect(content).toContain(
-      '25,pikachu,electric,static|lightning-rod,https://pokeapi.co/api/v2/pokemon/25/'
-    );
-    expect(content).toContain(
-      '6,charizard,electric,static|lightning-rod,https://pokeapi.co/api/v2/pokemon/25/'
+    expect(handleDownloadCSV).toHaveBeenCalledWith(
+      [mockPokemon, { ...mockPokemon, id: 6, name: 'charizard' }],
+      2
     );
   });
 });

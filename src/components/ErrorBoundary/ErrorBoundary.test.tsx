@@ -5,6 +5,34 @@ import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 import ErrorBoundary from './ErrorBoundary';
 
+vi.mock('./ErrorDisplay', () => ({
+  default: ({
+    error,
+    onReset,
+  }: {
+    error: Error | null;
+    onReset: () => void;
+  }) => (
+    <div role="alert">
+      <h3>Something went wrong</h3>
+      <p>{error?.message || 'Unknown error occurred'}</p>
+      <button onClick={onReset}>Try to recover</button>
+    </div>
+  ),
+}));
+
+vi.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      'ErrorBoundary.title': 'Something went wrong',
+      'ErrorBoundary.defaultErrorMessage': 'Unknown error occurred',
+      'ErrorBoundary.recoverButtonLabel': 'Try to recover',
+      'ErrorBoundary.recoverButtonText': 'Try to recover',
+    };
+    return translations[key] || key;
+  },
+}));
+
 const ErrorComponent: React.FC<{ shouldThrow?: boolean }> = ({
   shouldThrow = true,
 }) => {
@@ -72,6 +100,7 @@ describe('ErrorBoundary', () => {
   it('Восстанавливает нормальный рендеринг после нажатия кнопки восстановления', async () => {
     const user = userEvent.setup();
     let shouldThrow = true;
+
     const RecoverableErrorComponent = () => {
       if (shouldThrow) {
         throw new Error('Test error message');
@@ -85,7 +114,10 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>
     );
 
-    expect(screen.getByText('Something went wrong')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Something went wrong' })
+    ).toBeInTheDocument();
+    expect(screen.getByText('Test error message')).toBeInTheDocument();
 
     shouldThrow = false;
     await user.click(screen.getByRole('button', { name: 'Try to recover' }));

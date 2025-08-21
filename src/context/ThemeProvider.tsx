@@ -1,16 +1,26 @@
-import { useEffect } from 'react';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useEffect, useState } from 'react';
 import { ThemeContext, type Theme } from './ThemeContext';
 
-export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [theme, setTheme] = useLocalStorage<Theme>('theme', 'light');
+export const ThemeProvider = ({
+  children,
+  initialTheme = 'light',
+}: {
+  children: React.ReactNode;
+  initialTheme?: Theme;
+}) => {
+  const [theme, setTheme] = useState<Theme>(initialTheme);
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
+    const savedTheme = (localStorage.getItem('theme') as Theme) || 'light';
+    setTheme(savedTheme);
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  }, []);
 
   const toggleTheme = () => {
-    setTheme((prev: string) => (prev === 'light' ? 'dark' : 'light'));
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
   };
 
   return (

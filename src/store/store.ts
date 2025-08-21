@@ -1,3 +1,5 @@
+'use client';
+
 import { configureStore } from '@reduxjs/toolkit';
 import pokemonSelectionReducer from '../store/pokemonSelectionSlice';
 import { pokemonApi } from './pokemonApi';

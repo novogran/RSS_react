@@ -1,8 +1,9 @@
-import { API_URL } from '../constants';
+import { API_URL } from '@/constants';
 import type {
   PokemonDetailResponse,
   Pokemon,
-} from '../types/pokemonSearch.types';
+} from '@/types/pokemonSearch.types';
+import { generateCSV } from '@/app/[locale]/actions/csv';
 
 export const prepareData = (pokemonData: PokemonDetailResponse): Pokemon => ({
   name: pokemonData.name,
@@ -16,22 +17,27 @@ export const prepareData = (pokemonData: PokemonDetailResponse): Pokemon => ({
   stats: pokemonData.stats,
 });
 
-export const handleDownloadCSV = (
+export const handleDownloadCSV = async (
   selectedPokemons: Pokemon[],
   selectedCount: number
 ) => {
-  const csvContent = [
-    'ID,Name,Types,Abilities,URL',
-    selectedPokemons.map(
-      (p) =>
-        `${p.id},${p.name},${p.types.join('|')},${p.abilities.join('|')},${p.url}`
-    ),
-  ].join('\n');
+  if (typeof window === 'undefined') {
+    console.warn('CSV download is only available in browser environment');
+    return;
+  }
 
-  const blob = new Blob([csvContent], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `${selectedCount}_pokemons.csv`;
-  link.click();
+  try {
+    const csv = await generateCSV(selectedPokemons);
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${selectedCount}_pokemons.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Download failed:', error);
+  }
 };

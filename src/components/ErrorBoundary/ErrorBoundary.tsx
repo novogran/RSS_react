@@ -1,5 +1,6 @@
 import React, { type ErrorInfo } from 'react';
 import './ErrorBoundary.css';
+import ErrorDisplay from './ErrorDisplay';
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -30,17 +31,7 @@ class ErrorBoundary extends React.Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div className="error-boundary">
-          <div className="error-content">
-            <h3>Something went wrong</h3>
-            <p>
-              {this.state.error?.message || 'An unexpected error occurred.'}
-            </p>
-            <button onClick={this.handleReset} className="error-button">
-              Try to recover
-            </button>
-          </div>
-        </div>
+        <ErrorDisplay error={this.state.error} onReset={this.handleReset} />
       );
     }
 

@@ -1,3 +1,5 @@
+'use client';
+
 import './Pagination.css';
 import type { PaginationProps } from './types/pagination.types';
 
@@ -7,7 +9,7 @@ const Pagination = ({
   onPageChange,
 }: PaginationProps) => {
   const getPageNumbers = () => {
-    const pages = [];
+    const pages: number[] = [];
     const maxVisiblePages = 5;
 
     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
@@ -25,11 +27,12 @@ const Pagination = ({
   };
 
   return (
-    <div className="pagination">
+    <nav className="pagination" aria-label="Pagination">
       <button
         onClick={() => onPageChange(1)}
         disabled={currentPage === 1}
         className="pagination-button"
+        aria-label="First page"
       >
         «
       </button>
@@ -37,6 +40,7 @@ const Pagination = ({
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
         className="pagination-button"
+        aria-label="Previous page"
       >
         ‹
       </button>
@@ -46,6 +50,8 @@ const Pagination = ({
           key={page}
           onClick={() => onPageChange(page)}
           className={`pagination-button ${currentPage === page ? 'active' : ''}`}
+          aria-label={`Page ${page}`}
+          aria-current={currentPage === page ? 'page' : undefined}
         >
           {page}
         </button>
@@ -55,6 +61,7 @@ const Pagination = ({
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
         className="pagination-button"
+        aria-label="Next page"
       >
         ›
       </button>
@@ -62,10 +69,11 @@ const Pagination = ({
         onClick={() => onPageChange(totalPages)}
         disabled={currentPage === totalPages}
         className="pagination-button"
+        aria-label="Last page"
       >
         »
       </button>
-    </div>
+    </nav>
   );
 };
 

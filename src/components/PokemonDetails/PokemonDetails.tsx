@@ -1,8 +1,13 @@
+'use client';
+
 import React from 'react';
 import './PokemonDetails.css';
 import type { PokemonDetailsProps } from './types/pokemonDetails.types';
+import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 const PokemonDetails = ({ pokemon, loading, onClose }: PokemonDetailsProps) => {
+  const t = useTranslations('PokemonDetails');
   const capitalize = (str: string) =>
     str.charAt(0).toUpperCase() + str.slice(1);
 
@@ -19,11 +24,19 @@ const PokemonDetails = ({ pokemon, loading, onClose }: PokemonDetailsProps) => {
     <div className="pokemon-details-container" onClick={handleContainerClick}>
       {loading && (
         <div className="pokemon-details-container loading">
-          <div className="loading-spinner" data-testid="loading-spinner"></div>
-          <p>Loading details...</p>
+          <div
+            className="loading-spinner"
+            data-testid="loading-spinner"
+            aria-label={t('loadingAriaLabel')}
+          ></div>
+          <p>{t('loadingText')}</p>
         </div>
       )}
-      <button onClick={onClose} className="close-details-button">
+      <button
+        onClick={onClose}
+        className="close-details-button"
+        aria-label={t('closeButtonLabel')}
+      >
         ×
       </button>
 
@@ -36,30 +49,46 @@ const PokemonDetails = ({ pokemon, loading, onClose }: PokemonDetailsProps) => {
 
       {imageUrl && (
         <div className="pokemon-image">
-          <img src={imageUrl} alt={pokemon.name} />
+          <Image
+            src={imageUrl}
+            alt={t('imageAlt', { name: pokemon.name })}
+            width={200}
+            height={200}
+            priority={true}
+          />
         </div>
       )}
 
       <div className="pokemon-details-content">
         <div className="detail-section">
-          <h3>Physical</h3>
+          <h3>{t('physicalTitle')}</h3>
           <div className="physical-details">
             <div>
-              <span>Height</span>
-              <span>{(pokemon.height || 0) / 10}m</span>
+              <span>{t('heightLabel')}</span>
+              <span>
+                {(pokemon.height || 0) / 10}
+                {t('metersAbbr')}
+              </span>
             </div>
             <div>
-              <span>Weight</span>
-              <span>{(pokemon.weight || 0) / 10}kg</span>
+              <span>{t('weightLabel')}</span>
+              <span>
+                {(pokemon.weight || 0) / 10}
+                {t('kilogramsAbbr')}
+              </span>
             </div>
           </div>
         </div>
 
         <div className="detail-section">
-          <h3>Types</h3>
+          <h3>{t('typesTitle')}</h3>
           <div className="types-container">
             {pokemon.types.map((type) => (
-              <span key={type} className={`type-badge type-${type}`}>
+              <span
+                key={type}
+                className={`type-badge type-${type}`}
+                aria-label={t('typeBadge', { type })}
+              >
                 {capitalize(type)}
               </span>
             ))}
@@ -67,10 +96,14 @@ const PokemonDetails = ({ pokemon, loading, onClose }: PokemonDetailsProps) => {
         </div>
 
         <div className="detail-section">
-          <h3>Abilities</h3>
+          <h3>{t('abilitiesTitle')}</h3>
           <div className="abilities-container">
-            {pokemon.abilities.map((ability) => (
-              <span key={ability} className="ability-badge">
+            {[...new Set(pokemon.abilities)].map((ability) => (
+              <span
+                key={ability}
+                className="ability-badge"
+                aria-label={t('abilityBadge', { ability })}
+              >
                 {capitalize(ability)}
               </span>
             ))}
@@ -79,12 +112,14 @@ const PokemonDetails = ({ pokemon, loading, onClose }: PokemonDetailsProps) => {
 
         {pokemon.stats && (
           <div className="detail-section">
-            <h3>Stats</h3>
+            <h3>{t('statsTitle')}</h3>
             <div className="stats-container">
               {pokemon.stats.map((stat) => (
                 <div key={stat.stat.name} className="stat-row">
                   <span className="stat-name">
-                    {capitalize(stat.stat.name)}
+                    {t(`stats.${stat.stat.name}`, {
+                      defaultValue: capitalize(stat.stat.name),
+                    })}
                   </span>
                   <div className="stat-bar">
                     <div

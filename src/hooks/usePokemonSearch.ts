@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { LOCAL_STORAGE_SEARCHTERM_KEY } from '../constants';
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { LOCAL_STORAGE_SEARCHTERM_KEY } from '@/constants';
 import { useLocalStorage } from './useLocalStorage';
-import type { Pokemon, PokemonSearchState } from '../types/pokemonSearch.types';
+import type { Pokemon, PokemonSearchState } from '@/types/pokemonSearch.types';
 import {
   useGetPokemonListQuery,
   useGetPokemonByNameQuery,
@@ -11,11 +13,21 @@ import {
 import type { FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
 
 export const usePokemonSearch = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [savedSearchTerm] = useLocalStorage(LOCAL_STORAGE_SEARCHTERM_KEY, '');
-  const [searchTerm, setSearchTerm] = useState(savedSearchTerm || '');
-  const page = parseInt(searchParams.get('page') || '1', 10);
-  const detailsId = searchParams.get('details');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+    setSearchTerm(savedSearchTerm || '');
+  }, [savedSearchTerm]);
+
+  const page = isClient ? parseInt(searchParams?.get('page') || '1', 10) : 1;
+  const detailsId = isClient ? searchParams?.get('details') : null;
   const [showDetails, setShowDetails] = useState(false);
 
   const {
@@ -24,7 +36,7 @@ export const usePokemonSearch = () => {
     error: listError,
     refetch: refetchList,
   } = useGetPokemonListQuery(page, {
-    skip: !!searchTerm,
+    skip: !!searchTerm || !isClient,
   });
 
   const {
@@ -33,7 +45,7 @@ export const usePokemonSearch = () => {
     error: searchError,
     refetch: refetchSearch,
   } = useGetPokemonByNameQuery(searchTerm, {
-    skip: !searchTerm,
+    skip: !searchTerm || !isClient,
   });
 
   const {
@@ -42,24 +54,43 @@ export const usePokemonSearch = () => {
     error: detailsError,
     refetch: refetchDetails,
   } = useGetPokemonDetailsQuery(Number(detailsId), {
-    skip: !detailsId,
+    skip: !detailsId || !isClient,
   });
 
   const [state, setState] = useState<PokemonSearchState>({
-    searchTerm: savedSearchTerm,
+    searchTerm: '',
     results: [],
     listLoading: false,
     error: null,
-    currentPage: page,
+    currentPage: 1,
     totalCount: 0,
   });
 
-  useEffect(() => {
-    setShowDetails(!!detailsId);
-  }, [detailsId]);
+  const updateSearchParams = useCallback(
+    (params: Record<string, string>) => {
+      if (!isClient) return;
+
+      const newParams = new URLSearchParams(searchParams?.toString() || '');
+      Object.entries(params).forEach(([key, value]) => {
+        if (value) {
+          newParams.set(key, value);
+        } else {
+          newParams.delete(key);
+        }
+      });
+      router.replace(`${pathname}?${newParams.toString()}`);
+    },
+    [searchParams, pathname, router, isClient]
+  );
 
   useEffect(() => {
-    if (listData && !searchTerm) {
+    if (isClient) {
+      setShowDetails(!!detailsId);
+    }
+  }, [detailsId, isClient]);
+
+  useEffect(() => {
+    if (listData && !searchTerm && isClient) {
       setState((prev) => ({
         ...prev,
         results: listData,
@@ -68,10 +99,10 @@ export const usePokemonSearch = () => {
         error: null,
       }));
     }
-  }, [listData, searchTerm]);
+  }, [listData, searchTerm, isClient]);
 
   useEffect(() => {
-    if (searchTerm && searchData) {
+    if (searchTerm && searchData && isClient) {
       setState((prev) => ({
         ...prev,
         results: [searchData],
@@ -80,86 +111,114 @@ export const usePokemonSearch = () => {
         error: null,
       }));
     }
-  }, [page, searchData, searchTerm]);
+  }, [searchData, searchTerm, isClient]);
 
   useEffect(() => {
-    const error = listError || searchError || detailsError;
+    if (!isClient) return;
 
+    const error = listError || searchError || detailsError;
     setState((prev) => ({
       ...prev,
       error: getErrorMessage(error),
       listLoading: false,
     }));
-  }, [listError, searchError, detailsError]);
+  }, [listError, searchError, detailsError, isClient]);
 
   useEffect(() => {
+    if (!isClient) return;
+
     setState((prev) => ({
       ...prev,
       currentPage: page,
       listLoading: listLoading || searchLoading,
     }));
-  }, [page, listLoading, searchLoading]);
+  }, [page, listLoading, searchLoading, isClient]);
 
-  const handlePokemonSelect = (pokemon: Pokemon) => {
-    if (detailsId === pokemon.id.toString()) {
-      setSearchParams(
-        { page: state.currentPage.toString() },
-        { replace: true }
-      );
-    } else {
-      setSearchParams(
-        {
+  const handlePokemonSelect = useCallback(
+    (pokemon: Pokemon) => {
+      if (!isClient) return;
+
+      if (detailsId === pokemon.id.toString()) {
+        updateSearchParams({ page: state.currentPage.toString(), details: '' });
+      } else {
+        updateSearchParams({
           page: state.currentPage.toString(),
           details: pokemon.id.toString(),
-        },
-        { replace: true }
-      );
-    }
-  };
+        });
+      }
+    },
+    [detailsId, state.currentPage, updateSearchParams, isClient]
+  );
 
-  const handleCloseDetails = () => {
-    setSearchParams({ page: state.currentPage.toString() }, { replace: true });
-  };
+  const handleCloseDetails = useCallback(() => {
+    if (!isClient) return;
+    updateSearchParams({ page: state.currentPage.toString(), details: '' });
+  }, [state.currentPage, updateSearchParams, isClient]);
 
-  const handleRefresh = () => {
+  const handleRefresh = useCallback(() => {
+    if (!isClient) return;
+
     if (searchTerm) {
       refetchSearch();
     } else {
       refetchList();
     }
     if (detailsId) refetchDetails();
-  };
+  }, [
+    searchTerm,
+    detailsId,
+    refetchSearch,
+    refetchList,
+    refetchDetails,
+    isClient,
+  ]);
 
-  const getErrorMessage = (error: unknown): string => {
-    let errorMessage = 'Failed to fetch Pokémon data';
+  const handleSearch = useCallback(
+    (term: string) => {
+      if (!isClient) return;
 
-    if (error && typeof error === 'object' && 'status' in error) {
-      const apiError = error as FetchBaseQueryError;
-      if (typeof apiError.data === 'object' && apiError.data !== null) {
-        errorMessage =
-          (apiError.data as { message?: string }).message || errorMessage;
-      }
-    } else if (error instanceof Error) {
-      errorMessage = error.message;
+      setSearchTerm(term);
+      updateSearchParams({ page: '1', details: '' });
+    },
+    [updateSearchParams, isClient]
+  );
+
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      if (!isClient) return;
+      updateSearchParams({ page: newPage.toString() });
+    },
+    [updateSearchParams, isClient]
+  );
+
+  const getErrorMessage = (error: unknown): string | null => {
+    if (!error) return null;
+    if (typeof error === 'string') return error;
+    if (error instanceof Error) return error.message;
+
+    const apiError = error as FetchBaseQueryError;
+    if (typeof apiError.status === 'string') {
+      return `Error: ${apiError.status}`;
+    }
+    if (typeof apiError.data === 'object' && apiError.data !== null) {
+      return (
+        (apiError.data as { message?: string })?.message || 'Unknown error'
+      );
     }
 
-    return errorMessage;
+    return 'Failed to fetch Pokémon data';
   };
 
   return {
     state: {
       ...state,
-      searchTerm,
+      searchTerm: isClient ? searchTerm : '',
+      currentPage: isClient ? page : 1,
     },
     selectedPokemon: showDetails ? pokemonDetails : null,
     detailsLoading: showDetails ? detailsLoading : false,
-    handleSearch: (term: string) => {
-      setSearchTerm(term);
-      setSearchParams({ page: '1' });
-    },
-    handlePageChange: (page: number) => {
-      setSearchParams({ page: page.toString() });
-    },
+    handleSearch,
+    handlePageChange,
     handlePokemonSelect,
     handleCloseDetails,
     handleRefresh,

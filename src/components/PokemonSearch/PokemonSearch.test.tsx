@@ -11,10 +11,42 @@ import {
 import PokemonSearch from './PokemonSearch';
 import { vi } from 'vitest';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { NextIntlClientProvider } from 'next-intl';
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    pathname: '/',
+    query: {},
+    asPath: '/',
+  }),
+  usePathname: () => '/',
+  useSearchParams: () => new URLSearchParams(),
+}));
 
 vi.mock('../../hooks/useLocalStorage', () => ({
   useLocalStorage: vi.fn(() => ['', vi.fn()]),
 }));
+
+const messages = {
+  SearchBar: {
+    searchPlaceholder: 'Search Pokémon by name...',
+    searchButtonText: 'Search',
+    searchButtonAriaLabel: 'Search',
+    searchAriaLabel: 'Search for Pokémon',
+  },
+  ResultsList: {
+    loadingText: 'Loading...',
+    loadingAriaLabel: 'Loading',
+    errorTitle: 'Error loading Pokémon',
+    emptyResults: 'No Pokémon found',
+  },
+  PokemonSearch: {
+    refreshButtonLabel: 'Refresh',
+    refreshButtonText: 'Refresh Data',
+  },
+};
 
 describe('PokemonSearch', () => {
   const user = userEvent.setup();
@@ -24,10 +56,17 @@ describe('PokemonSearch', () => {
     localStorage.clear();
   });
 
-  const renderWithRouter = (ui: React.ReactElement, { route = '/' } = {}) => {
+  const renderWithProviders = (
+    ui: React.ReactElement,
+    { route = '/' } = {}
+  ) => {
     return render(
       <Provider store={store}>
-        <MemoryRouter initialEntries={[route]}>{ui}</MemoryRouter>
+        <MemoryRouter initialEntries={[route]}>
+          <NextIntlClientProvider locale="en" messages={messages}>
+            {ui}
+          </NextIntlClientProvider>
+        </MemoryRouter>
       </Provider>
     );
   };
@@ -36,7 +75,7 @@ describe('PokemonSearch', () => {
     vi.mocked(useLocalStorage).mockImplementation(() => ['pikachu', vi.fn()]);
     mockSuccessfulApiSingleFetch();
 
-    renderWithRouter(<PokemonSearch />);
+    renderWithProviders(<PokemonSearch />);
 
     await waitFor(() => {
       expect(screen.getByDisplayValue('pikachu')).toBeInTheDocument();
@@ -46,7 +85,7 @@ describe('PokemonSearch', () => {
   it('Обрабатывает ошибки API при поиске', async () => {
     mockFailedFetch(404);
 
-    renderWithRouter(<PokemonSearch />);
+    renderWithProviders(<PokemonSearch />);
 
     const input = screen.getByPlaceholderText('Search Pokémon by name...');
     await user.type(input, 'unknown');
@@ -68,7 +107,7 @@ describe('PokemonSearch', () => {
       }),
     });
 
-    renderWithRouter(<PokemonSearch />);
+    renderWithProviders(<PokemonSearch />);
 
     await waitFor(() => {
       expect(screen.getByText('Error loading Pokémon')).toBeInTheDocument();
