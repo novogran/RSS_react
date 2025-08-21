@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { store } from '../../utils/store';
+import { store } from '../../store/store';
 import {
   mockSuccessfulApiSingleFetch,
   mockFailedFetch,
@@ -71,7 +71,7 @@ describe('PokemonSearch', () => {
     renderWithRouter(<PokemonSearch />);
 
     await waitFor(() => {
-      expect(screen.getByText('No Pokémon found')).toBeInTheDocument();
+      expect(screen.getByText('Error loading Pokémon')).toBeInTheDocument();
     });
   });
 });

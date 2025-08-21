@@ -5,7 +5,7 @@ import type { PokemonCardProps } from './types/pokemonCard.types';
 import {
   selectedPokemonSelector,
   togglePokemonSelection,
-} from '../store/pokemonSelectionSlice';
+} from '../../store/pokemonSelectionSlice';
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
 const PokemonCard = memo(
