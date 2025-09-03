@@ -2,10 +2,19 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import { useTheme } from '../../hooks/useTheme';
 import ThemeSwitcher from './ThemeSwitcher';
+import { NextIntlClientProvider } from 'next-intl';
 
 vi.mock('../../hooks/useTheme', () => ({
   useTheme: vi.fn(),
 }));
+
+const messages = {
+  ThemeSwitcher: {
+    light: 'Light',
+    dark: 'Dark',
+    toggleTheme: 'Toggle theme',
+  },
+};
 
 describe('ThemeSwitcher - переключатель темы', () => {
   const mockToggleTheme = vi.fn();
@@ -21,8 +30,16 @@ describe('ThemeSwitcher - переключатель темы', () => {
     vi.clearAllMocks();
   });
 
+  const renderWithProviders = (ui: React.ReactElement) => {
+    return render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        {ui}
+      </NextIntlClientProvider>
+    );
+  };
+
   it('отображает лейблы Light/Dark и переключатель', () => {
-    render(<ThemeSwitcher />);
+    renderWithProviders(<ThemeSwitcher />);
 
     expect(screen.getByText('Light')).toBeInTheDocument();
     expect(screen.getByText('Dark')).toBeInTheDocument();
@@ -35,13 +52,13 @@ describe('ThemeSwitcher - переключатель темы', () => {
       toggleTheme: mockToggleTheme,
     });
 
-    render(<ThemeSwitcher />);
+    renderWithProviders(<ThemeSwitcher />);
 
     expect(screen.getByRole('checkbox')).toBeChecked();
   });
 
   it('вызывает toggleTheme при клике', () => {
-    render(<ThemeSwitcher />);
+    renderWithProviders(<ThemeSwitcher />);
 
     const switchElement = screen.getByRole('checkbox');
     fireEvent.click(switchElement);

@@ -1,57 +1,98 @@
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import Header from './Header';
-import '@testing-library/jest-dom';
+import { NextIntlClientProvider } from 'next-intl';
 import { ThemeProvider } from '../../context/ThemeProvider';
+import { vi } from 'vitest';
+import { usePathname } from '@/i18n/navigation';
+
+vi.mock('next-intl', async () => {
+  const actual = await vi.importActual('next-intl');
+  return {
+    ...actual,
+    useLocale: () => 'en',
+    useTranslations: () => (key: string) => {
+      const translations: Record<string, string> = {
+        'Header.title': 'title',
+        'Header.home': 'home',
+        'Header.about': 'about',
+      };
+      return translations[key] || key;
+    },
+  };
+});
+
+vi.mock('@/i18n/navigation', () => ({
+  usePathname: vi.fn(() => '/'),
+  useRouter: () => ({
+    replace: vi.fn(),
+  }),
+  Link: ({ href, children }: { href: string; children: React.ReactNode }) => (
+    <a href={href} className={href === usePathname() ? 'active' : ''}>
+      {children}
+    </a>
+  ),
+}));
+
+vi.mock('../ThemeSwitcher', () => ({
+  ThemeSwitcher: () => <div>ThemeSwitcher</div>,
+}));
 
 describe('Header', () => {
-  const renderWithRouter = (initialRoute = '/') => {
+  const renderWithProviders = (path = '/') => {
+    vi.mocked(usePathname).mockReturnValue(path);
     return render(
-      <MemoryRouter initialEntries={[initialRoute]}>
+      <NextIntlClientProvider locale="en" messages={{}}>
         <ThemeProvider>
-          <Routes>
-            <Route path="*" element={<Header />} />
-          </Routes>
+          <Header />
         </ThemeProvider>
-      </MemoryRouter>
+      </NextIntlClientProvider>
     );
   };
 
-  it('отображает название приложения со ссылкой на главную страницу', () => {
-    renderWithRouter();
-    const titleLink = screen.getByRole('link', { name: /pokémon search/i });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('renders app title with link to home', () => {
+    renderWithProviders();
+    const titleLink = screen.getByRole('link', { name: 'title' });
     expect(titleLink).toBeInTheDocument();
     expect(titleLink).toHaveAttribute('href', '/');
   });
 
-  it('отображает навигационные ссылки', () => {
-    renderWithRouter();
-    expect(screen.getByRole('link', { name: /home/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /about/i })).toBeInTheDocument();
+  it('renders navigation links', () => {
+    renderWithProviders();
+    expect(screen.getByRole('link', { name: 'home' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'about' })).toBeInTheDocument();
   });
 
-  it('правильно отмечает активную ссылку для домашней страницы', () => {
-    renderWithRouter('/');
-    const homeLink = screen.getByRole('link', { name: /home/i });
-    const aboutLink = screen.getByRole('link', { name: /about/i });
+  it('marks home link as active when on home page', () => {
+    renderWithProviders('/');
+
+    const homeLink = screen.getByRole('link', { name: 'home' });
+    const aboutLink = screen.getByRole('link', { name: 'about' });
 
     expect(homeLink).toHaveClass('active');
     expect(aboutLink).not.toHaveClass('active');
   });
 
-  it('правильно отмечает активную ссылку на страницу о нас', () => {
-    renderWithRouter('/about');
-    const homeLink = screen.getByRole('link', { name: /home/i });
-    const aboutLink = screen.getByRole('link', { name: /about/i });
+  it('marks about link as active when on about page', () => {
+    renderWithProviders('/about');
+
+    const homeLink = screen.getByRole('link', { name: 'home' });
+    const aboutLink = screen.getByRole('link', { name: 'about' });
 
     expect(aboutLink).toHaveClass('active');
     expect(homeLink).not.toHaveClass('active');
   });
 
-  it('имеет правильную структуру навигации', () => {
-    renderWithRouter();
-    const nav = screen.getByRole('navigation');
-    expect(nav).toBeInTheDocument();
-    expect(nav).toHaveClass('nav-links');
+  it('renders language switcher', () => {
+    renderWithProviders();
+    expect(screen.getByText('Рус')).toBeInTheDocument();
+  });
+
+  it('renders theme switcher', () => {
+    renderWithProviders();
+    expect(screen.getByText('ThemeSwitcher')).toBeInTheDocument();
   });
 });

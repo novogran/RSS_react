@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { Pokemon } from '../types/pokemonSearch.types';
+import type { Pokemon } from '@/types/pokemonSearch.types';
 
 export interface PokemonSelectionState {
   selectedPokemons: Pokemon[];
@@ -15,13 +15,14 @@ export const pokemonSelectionSlice = createSlice({
   reducers: {
     togglePokemonSelection: (state, action: PayloadAction<Pokemon>) => {
       const pokemon = action.payload;
+      const existingIndex = state.selectedPokemons.findIndex(
+        (item) => item.id === pokemon.id
+      );
 
-      if (state.selectedPokemons.find((item) => item.id === pokemon.id)) {
-        state.selectedPokemons = state.selectedPokemons.filter(
-          (item) => item.id !== pokemon.id
-        );
+      if (existingIndex >= 0) {
+        state.selectedPokemons.splice(existingIndex, 1);
       } else {
-        state.selectedPokemons = [...state.selectedPokemons, pokemon];
+        state.selectedPokemons.push(pokemon);
       }
     },
     clearAllSelections: (state) => {
@@ -30,10 +31,13 @@ export const pokemonSelectionSlice = createSlice({
   },
   selectors: {
     selectedPokemonSelector: (state) => state.selectedPokemons,
+    isPokemonSelected: (state, pokemonId: number) =>
+      state.selectedPokemons.some((pokemon) => pokemon.id === pokemonId),
   },
 });
 
-export const { selectedPokemonSelector } = pokemonSelectionSlice.selectors;
+export const { selectedPokemonSelector, isPokemonSelected } =
+  pokemonSelectionSlice.selectors;
 export const { togglePokemonSelection, clearAllSelections } =
   pokemonSelectionSlice.actions;
 export default pokemonSelectionSlice.reducer;

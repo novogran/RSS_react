@@ -1,0 +1,106 @@
+{
+  "AboutPage": {
+    "title": "О разработчике",
+    "developerName": "Новогран Виталий",
+    "developerStatsLabel": "Статистика разработчика",
+    "ageLabel": "Возраст",
+    "ageValue": "29",
+    "locationLabel": "Местоположение",
+    "locationValue": "Минск",
+    "specialtyLabel": "Специализация",
+    "specialtyValue": "Фронтенд-разработка",
+    "journeyTitle": "Путь в разработке",
+    "journeyParagraph1": "Мой путь в программировании начался с Java, где я разрабатывал приложения для Android. Позже я перешел на Kotlin для более выразительного и лаконичного кода. Стремясь расширить свои навыки, я освоил фронтенд-разработку, включая HTML, CSS и JavaScript.",
+    "journeyParagraph2": "Больше всего в программировании мне нравится творческий процесс решения задач - поиск элегантных решений для сложных проблем. Каждый проект - это возможность учиться и совершенствоваться.",
+    "interestsTitle": "Вне программирования",
+    "interestsIntro": "Когда я не пишу код, вы можете найти меня:",
+    "interestsListLabel": "Личные интересы",
+    "interest1": "Исследую новые игровые миры",
+    "interest2": "Чиню и модернизирую гаджеты",
+    "interest3": "Плаваю для отдыха и поддержания формы",
+    "aspirationsTitle": "Планы на будущее",
+    "aspirationsText": "Я стремлюсь к постоянному развитию в IT и делюсь знаниями с сообществом разработчиков. Моя цель - участвовать в значимых проектах, решающих реальные проблемы, и наставлять начинающих разработчиков.",
+    "educationTitle": "Образование",
+    "educationText": "Я освоил React благодаря отличной программе:",
+    "rsSchoolLinkLabel": "Курс React от RS School (открывается в новой вкладке)",
+    "rsSchoolLinkText": "Курс React от RS School"
+  },
+  "ErrorBoundary": {
+    "title": "Произошла ошибка",
+    "defaultErrorMessage": "Возникла непредвиденная ошибка.",
+    "recoverButtonLabel": "Попытаться восстановиться после ошибки",
+    "recoverButtonText": "Попробовать снова"
+  },
+  "Header": {
+    "title": "Поиск Покемонов",
+    "home": "Главная",
+    "about": "О проекте"
+  },
+  "NotFound": {
+    "sadPikachuAlt": "Грустный Пикачу",
+    "title": "404 - Страница не найдена",
+    "message": "Покемон, которого вы ищете, сбежал!",
+    "returnLink": "Вернуться к поиску Покемонов"
+  },
+  "PokemonCard": {
+    "selectPokemon": "Выбрать {name}",
+    "typeLabel": "Тип",
+    "typeBadge": "Тип: {type}",
+    "abilitiesLabel": "Способности",
+    "abilityBadge": "Способность: {ability}"
+  },
+  "PokemonDetails": {
+    "loadingAriaLabel": "Загрузка",
+    "loadingText": "Загрузка деталей...",
+    "closeButtonLabel": "Закрыть детали",
+    "imageAlt": "Официальный арт {name}",
+    "physicalTitle": "Физические",
+    "heightLabel": "Рост",
+    "metersAbbr": "м",
+    "weightLabel": "Вес",
+    "kilogramsAbbr": "кг",
+    "typesTitle": "Типы",
+    "typeBadge": "Тип: {type}",
+    "abilitiesTitle": "Способности",
+    "abilityBadge": "Способность: {ability}",
+    "statsTitle": "Характеристики",
+    "stats": {
+      "hp": "Здоровье",
+      "attack": "Атака",
+      "defense": "Защита",
+      "special-attack": "Спец. Атака",
+      "special-defense": "Спец. Защита",
+      "speed": "Скорость"
+    }
+  },
+  "PokemonSearch": {
+    "refreshButtonLabel": "Обновить данные о покемонах",
+    "refreshButtonText": "Обновить данные"
+  },
+  "ResultsList": {
+    "loadingAriaLabel": "Загрузка",
+    "loadingText": "Загрузка покемонов...",
+    "errorTitle": "Ошибка загрузки покемонов",
+    "noResultsTitle": "Покемоны не найдены",
+    "noResultsSuggestion": "Попробуйте поискать другое имя покемона.",
+    "resultsTitle": "Результаты поиска"
+  },
+  "SearchBar": {
+    "searchPlaceholder": "Поиск покемонов по имени...",
+    "searchAriaLabel": "Поиск покемонов по имени",
+    "searchButtonAriaLabel": "Поиск",
+    "searchButtonText": "Поиск"
+  },
+  "SelectionFlyout": {
+    "selectedCount": "{count, plural, one {Выбран # покемон} few {Выбрано # покемона} many {Выбрано # покемонов} other {Выбрано # покемонов}}",
+    "unselectAllAriaLabel": "Снять выделение со всех покемонов",
+    "unselectAllText": "Снять выделение",
+    "downloadAriaLabel": "Скачать выбранных покемонов как CSV",
+    "downloadText": "Скачать CSV"
+  },
+  "ThemeSwitcher": {
+    "light": "Светлая",
+    "dark": "Темная",
+    "toggleTheme": "Переключить между светлой и темной темой"
+  }
+}

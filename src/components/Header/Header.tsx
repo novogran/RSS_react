@@ -1,30 +1,46 @@
-import { Link, useLocation } from 'react-router-dom';
-import './Header.css';
-import { ThemeSwitcher } from '../ThemeSwitcher';
+'use client';
 
-const Header = () => {
-  const location = useLocation();
+import './Header.css';
+import { Link, usePathname, useRouter } from '@/i18n/navigation';
+import { ThemeSwitcher } from '../ThemeSwitcher';
+import { useLocale, useTranslations } from 'next-intl';
+
+export const Header = () => {
+  const pathname = usePathname();
+  const locale = useLocale();
+  const router = useRouter();
+  const t = useTranslations('Header');
+
+  const switchLanguage = () => {
+    const newLocale = locale === 'en' ? 'ru' : 'en';
+    router.replace(pathname, { locale: newLocale });
+  };
 
   return (
     <header className="app-header">
       <div className="header-content">
+        <button onClick={switchLanguage} className="language-switcher">
+          {locale === 'en' ? 'Рус' : 'Eng'}
+        </button>
         <h1 className="app-title">
-          <Link to="/">Pokémon Search</Link>
+          <Link href="/">{t('title')}</Link>
           <ThemeSwitcher />
         </h1>
 
         <nav className="nav-links">
           <Link
-            to="/"
-            className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
+            href="/"
+            className={`nav-link ${pathname === '/' ? 'active' : ''}`}
+            passHref
           >
-            Home
+            {t('home')}
           </Link>
           <Link
-            to="/about"
-            className={`nav-link ${location.pathname === '/about' ? 'active' : ''}`}
+            href="/about"
+            className={`nav-link ${pathname.includes('/about') ? 'active' : ''}`}
+            passHref
           >
-            About
+            {t('about')}
           </Link>
         </nav>
       </div>

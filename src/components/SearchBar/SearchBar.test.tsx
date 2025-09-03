@@ -3,6 +3,24 @@ import userEvent from '@testing-library/user-event';
 import SearchBar from './SearchBar';
 import { vi } from 'vitest';
 import { LOCAL_STORAGE_SEARCHTERM_KEY } from '../../constants';
+import { NextIntlClientProvider } from 'next-intl';
+
+const messages = {
+  SearchBar: {
+    searchPlaceholder: 'Search Pokémon by name...',
+    searchAriaLabel: 'Search for Pokémon',
+    searchButtonText: 'Search',
+    searchButtonAriaLabel: 'Search',
+  },
+};
+
+const renderWithProviders = (ui: React.ReactElement) => {
+  return render(
+    <NextIntlClientProvider locale="en" messages={messages}>
+      {ui}
+    </NextIntlClientProvider>
+  );
+};
 
 describe('SearchBar', () => {
   const user = userEvent.setup();
@@ -18,7 +36,7 @@ describe('SearchBar', () => {
   });
 
   it('Рендерит input и кнопку', () => {
-    render(<SearchBar onSearchSubmit={mockOnSearchSubmit} />);
+    renderWithProviders(<SearchBar onSearchSubmit={mockOnSearchSubmit} />);
 
     expect(
       screen.getByPlaceholderText('Search Pokémon by name...')
@@ -31,13 +49,13 @@ describe('SearchBar', () => {
       LOCAL_STORAGE_SEARCHTERM_KEY,
       JSON.stringify('pikachu')
     );
-    render(<SearchBar onSearchSubmit={mockOnSearchSubmit} />);
+    renderWithProviders(<SearchBar onSearchSubmit={mockOnSearchSubmit} />);
 
     expect(screen.getByDisplayValue('pikachu')).toBeInTheDocument();
   });
 
   it('Обновляет состояние при вводе текста', async () => {
-    render(<SearchBar onSearchSubmit={mockOnSearchSubmit} />);
+    renderWithProviders(<SearchBar onSearchSubmit={mockOnSearchSubmit} />);
     const input = screen.getByPlaceholderText('Search Pokémon by name...');
 
     await user.type(input, 'char');
@@ -46,7 +64,7 @@ describe('SearchBar', () => {
   });
 
   it('Вызывает onSearchSubmit с текущим значением при отправке формы', async () => {
-    render(<SearchBar onSearchSubmit={mockOnSearchSubmit} />);
+    renderWithProviders(<SearchBar onSearchSubmit={mockOnSearchSubmit} />);
     const input = screen.getByPlaceholderText('Search Pokémon by name...');
     const button = screen.getByRole('button', { name: 'Search' });
 
@@ -58,7 +76,7 @@ describe('SearchBar', () => {
 
   it('Сохраняет значение в localStorage при отправке формы', async () => {
     const setItemSpy = vi.spyOn(localStorage, 'setItem');
-    render(<SearchBar onSearchSubmit={mockOnSearchSubmit} />);
+    renderWithProviders(<SearchBar onSearchSubmit={mockOnSearchSubmit} />);
     const input = screen.getByPlaceholderText('Search Pokémon by name...');
     const button = screen.getByRole('button', { name: 'Search' });
 
@@ -77,7 +95,7 @@ describe('SearchBar', () => {
   });
 
   it('Не вызывает onSearchSubmit при пустом запросе', async () => {
-    render(<SearchBar onSearchSubmit={mockOnSearchSubmit} />);
+    renderWithProviders(<SearchBar onSearchSubmit={mockOnSearchSubmit} />);
     const button = screen.getByRole('button', { name: 'Search' });
 
     await user.click(button);

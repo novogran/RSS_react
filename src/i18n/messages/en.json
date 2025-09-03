@@ -1,0 +1,106 @@
+{
+  "AboutPage": {
+    "title": "About the Developer",
+    "developerName": "Novogran Vitaly",
+    "developerStatsLabel": "Developer Stats",
+    "ageLabel": "Age",
+    "ageValue": "29",
+    "locationLabel": "Location",
+    "locationValue": "Minsk",
+    "specialtyLabel": "Specialty",
+    "specialtyValue": "Front-End Development",
+    "journeyTitle": "Development Journey",
+    "journeyParagraph1": "My programming journey began with Java where I developed Android applications. I later transitioned to Kotlin for more expressive and concise code. Seeking to expand my skillset, I ventured into front-end development mastering HTML, CSS, and JavaScript.",
+    "journeyParagraph2": "What I enjoy most about coding is the creative problem-solving aspect - finding elegant solutions to complex challenges. Each project is an opportunity to learn and improve.",
+    "interestsTitle": "Beyond Coding",
+    "interestsIntro": "When I am not coding, you can find me:",
+    "interestsListLabel": "Personal interests",
+    "interest1": "Exploring new video game worlds",
+    "interest2": "Fixing and tinkering with tech gadgets",
+    "interest3": "Swimming for relaxation and fitness",
+    "aspirationsTitle": "Future Aspirations",
+    "aspirationsText": "I am passionate about continuous growth in the tech field and sharing knowledge with the developer community. My goal is to contribute to meaningful projects that solve real-world problems while mentoring aspiring developers.",
+    "educationTitle": "Education",
+    "educationText": "I honed my React skills through the excellent curriculum at:",
+    "rsSchoolLinkLabel": "RS School React Course (opens in new tab)",
+    "rsSchoolLinkText": "RS School React Course"
+  },
+  "ErrorBoundary": {
+    "title": "Something went wrong",
+    "defaultErrorMessage": "An unexpected error occurred.",
+    "recoverButtonLabel": "Try to recover from error",
+    "recoverButtonText": "Try to recover"
+  },
+  "Header": {
+    "title": "Pokémon Search",
+    "home": "Home",
+    "about": "About"
+  },
+  "NotFound": {
+    "sadPikachuAlt": "Sad Pikachu",
+    "title": "404 - Page Not Found",
+    "message": "The Pokémon you are looking for has fled!",
+    "returnLink": "Return to Pokémon Search"
+  },
+  "PokemonCard": {
+    "selectPokemon": "Select {name}",
+    "typeLabel": "Type",
+    "typeBadge": "Type: {type}",
+    "abilitiesLabel": "Abilities",
+    "abilityBadge": "Ability: {ability}"
+  },
+  "PokemonDetails": {
+    "loadingAriaLabel": "Loading",
+    "loadingText": "Loading details...",
+    "closeButtonLabel": "Close details",
+    "imageAlt": "Official artwork of {name}",
+    "physicalTitle": "Physical",
+    "heightLabel": "Height",
+    "metersAbbr": "m",
+    "weightLabel": "Weight",
+    "kilogramsAbbr": "kg",
+    "typesTitle": "Types",
+    "typeBadge": "Type: {type}",
+    "abilitiesTitle": "Abilities",
+    "abilityBadge": "Ability: {ability}",
+    "statsTitle": "Stats",
+    "stats": {
+      "hp": "HP",
+      "attack": "Attack",
+      "defense": "Defense",
+      "special-attack": "Sp. Attack",
+      "special-defense": "Sp. Defense",
+      "speed": "Speed"
+    }
+  },
+  "PokemonSearch": {
+    "refreshButtonLabel": "Refresh Pokémon data",
+    "refreshButtonText": "Refresh Data"
+  },
+  "ResultsList": {
+    "loadingAriaLabel": "Loading",
+    "loadingText": "Loading Pokémon...",
+    "errorTitle": "Error loading Pokémon",
+    "noResultsTitle": "No Pokémon found",
+    "noResultsSuggestion": "Try searching for a different Pokémon name.",
+    "resultsTitle": "Search Results"
+  },
+  "SearchBar": {
+    "searchPlaceholder": "Search Pokémon by name...",
+    "searchAriaLabel": "Search Pokémon by name",
+    "searchButtonAriaLabel": "Search",
+    "searchButtonText": "Search"
+  },
+  "SelectionFlyout": {
+    "selectedCount": "{count, plural, one {# Pokémon selected} other {# Pokémon selected}}",
+    "unselectAllAriaLabel": "Unselect all Pokémon",
+    "unselectAllText": "Unselect all",
+    "downloadAriaLabel": "Download selected Pokémon as CSV",
+    "downloadText": "Download CSV"
+  },
+  "ThemeSwitcher": {
+    "light": "Light",
+    "dark": "Dark",
+    "toggleTheme": "Toggle between light and dark theme"
+  }
+}
