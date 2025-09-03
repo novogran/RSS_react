@@ -1,6 +1,8 @@
 # RCC React
 
-Deploy - [link](https://novogranreact.netlify.app/)
+Deploy - [link](https://rss-react-6pld21flr-novograns-projects.vercel.app/en/)
+
+![image](https://github.com/user-attachments/assets/92864a34-ef6c-4528-ba77-5697f77cfe77)
 
 ## 🛠 Tech Stack
 
@@ -11,6 +13,8 @@ Deploy - [link](https://novogranreact.netlify.app/)
 - React Router
 - React Hooks
 - REST API
+- NextJs
+- Redux
 
 **Tooling:**
 
